@@ -1,0 +1,52 @@
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --- Python (Backend) ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+venv/
+.env
+dist/
+build/
+pip-wheel-metadata/
+*.egg-info/
+
+# --- Node / TypeScript / Frontend ---
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# --- Electron / Desktop builds ---
+electron-builder-out/ 
+release/
+*.AppImage
+*.exe
+*.dmg
+*.zip
+
+# --- Interprocess / generated IPC artifacts (optional) ---
+*.sock
+*.pid
+
+# --- Local project secrets ---
+secrets/
+credentials.json
+
+# --- Monorepo local overrides ---
+/frontend/.env.local
+/backend/.env.local
