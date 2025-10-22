@@ -42,24 +42,24 @@ A compact desktop application for apprentices to record exam subresults, compute
 
 ## Product Backlog with Story Points
 
-| Item | Story Points |
-|---|---:|
-| Input interface for exam results | 4 |
-| Show interim grade per entry | 1 |
-| Show interim grade aggregations | 1 |
-| Show final grade | 1 |
-| Show Passed or Not Passed | 1 |
-| Save results with privacy considerations | 3 |
-| Load saved results | 2 |
-| Calculate interim grades | 6 |
-| Calculate final grade | 3 |
-| Determine Passed or Not Passed logic | 1 |
-| Light and Dark mode | 3 |
-| Language settings English and German | 3 |
-| Speech output of result | 2 |
-| Documentation | 3 |
-| Start and close program | 1 |
-| Run test dataset suite | 5 |
+| Item                                     | Story Points | done by |
+|------------------------------------------|-------------:|---------|
+| Input interface for exam results         |            4 |         |
+| Show interim grade per entry             |            1 |         |
+| Show interim grade aggregations          |            1 |         |
+| Show final grade                         |            1 |         |
+| Show Passed or Not Passed                |            1 |         |
+| Save results with privacy considerations |            3 |         |
+| Load saved results                       |            2 |         |
+| Calculate interim grades                 |            6 |         |
+| Calculate final grade                    |            3 |         |
+| Determine Passed or Not Passed logic     |            1 |         |
+| Light and Dark mode                      |            3 |         |
+| Language settings English and German     |            3 |         |
+| Speech output of result                  |            2 |         |
+| Documentation                            |            3 |         |
+| Start and close program                  |            1 |         |
+| Run test dataset suite                   |            5 |         |
 
 ---
 
@@ -73,11 +73,8 @@ A compact desktop application for apprentices to record exam subresults, compute
 
 **Architecture:** Python Backend + TypeScript Frontend (Desktop)
 
-**Frontend (empfohlen):** Electron (TS runs in Node + Chromium) or a neutral desktop layer such as Neutralino or Tauri.
+**Backend:** Python - FastAPI
+
+**Frontend:** Electron (TS runs in Node + Chromium)
 
 **Communication:** local HTTP / WebSocket / gRPC or direct stdio / IPC between Node and Python.
-
-**Vorteile:** large ecosystems (React / Vue) for UI; many TS/JS developers available.
-
-**Nachteile:** Electron embeds a browser engine (larger footprint); if you strictly mean "no browser", Electron is still a desktop app but uses Chromium internally.
-

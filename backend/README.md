@@ -1,0 +1,79 @@
+# Backend — FastAPI Service
+
+This folder contains the Python backend service of the monorepo.  
+It provides a simple FastAPI application that can be extended with APIs, database connections, and other business logic.
+
+---
+
+## Requirements
+
+- **Python 3.9+**
+- **pip**
+- (optional) **virtualenv** or **venv** module
+
+---
+
+## Getting Started
+
+### 1. Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+- **macOS/Linux:**
+  ```bash
+  source .venv/bin/activate
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+
+---
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+> If `requirements.txt` is missing, install manually:
+> ```bash
+> pip install fastapi uvicorn
+> pip freeze > requirements.txt
+> ```
+
+---
+
+### 3. Run the development server
+
+```bash
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Once started, open:
+
+- API root: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- Interactive docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+### 4. Project structure
+
+```
+backend/
+├── main.py
+├── requirements.txt
+└── .venv/            # virtual environment (excluded in .gitignore)
+```
+
+---
+
+## Notes
+
+- Modify `main.py` to add your routes and business logic.
+- Add new dependencies with `pip install <package>` and run `pip freeze > requirements.txt`.
+- Use `.env` files for local configuration if needed (`python-dotenv` recommended).
