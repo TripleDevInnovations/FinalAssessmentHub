@@ -1,0 +1,30 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Environment variables & secrets
+.env
+.env.*
+
+# Logs & coverage
+*.log
+.coverage
+htmlcov/
+.cache/
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
