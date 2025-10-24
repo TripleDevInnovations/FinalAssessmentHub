@@ -1,11 +1,6 @@
 from fastapi import FastAPI
+from contoller import exam_controller
 
-app = FastAPI(title="MyMonoBackend")
+app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello from backend!"}
-
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
+app.include_router(exam_controller.router, prefix="/exam", tags=["Exam"])

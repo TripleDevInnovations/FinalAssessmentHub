@@ -9,17 +9,26 @@ It provides a simple FastAPI application that can be extended with APIs, databas
 
 - **Python 3.9+**
 - **pip**
-- (optional) **virtualenv** or **venv** module
+- **virtualenv** or **venv** module ( ``` python -m venv .venv```)
+
+### Pycharm Interpreter konfigurieren
+
+1. Öffne **File ▸ Settings ▸ Project: `FinalAssessmentHub` ▸ Python Interpreter**
+2. Klicke auf **Add Interpreter ▸ Add Existing Interpreter**
+3. Wähle den Interpreter deiner virtuellen Umgebung:
+
+   * **Windows:**
+
+     ```
+     PATH_TO_PROJECT\backend\.venv\Scripts\python.exe
+     ```
+   * **Linux / macOS:**
+
+     ```
+     PATH_TO_PROJECT/backend/.venv/bin/python
+     ```
 
 ---
-
-## Getting Started
-
-### 1. Create and activate a virtual environment
-
-```bash
-python -m venv .venv
-```
 
 Activate it:
 
