@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any
-from model.final_exam_result_input import FinalExamResultInput, AP2Part
-from model.final_exam_result_output import FinalExamResultOutput
+from backend.app.model.final_exam_result_input import FinalExamResultInput, AP2Part
+from backend.app.model.final_exam_result_output import FinalExamResultOutput
 
 class ExamCalculationService:
     WEIGHTS = {

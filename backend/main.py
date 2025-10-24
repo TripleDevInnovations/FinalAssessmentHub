@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contoller import exam_controller
+from backend.app.controller import exam_controller
 
 app = FastAPI()
 

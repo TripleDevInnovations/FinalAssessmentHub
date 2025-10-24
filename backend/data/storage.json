@@ -1,48 +1,48 @@
 [
     {
         "name": "string",
-        "ap1": 80,
+        "ap1": 100,
         "ap2": {
             "planning": {
-                "main": 30,
-                "extra": 90
+                "main": 100,
+                "extra": 100
             },
             "development": {
-                "main": 50,
-                "extra": null
+                "main": 100,
+                "extra": 100
             },
             "economy": {
-                "main": 70,
-                "extra": null
+                "main": 100,
+                "extra": 100
             }
         },
         "ml": {
-            "presentation": 65,
-            "project": 75
+            "presentation": 100,
+            "project": 100
         },
-        "id": "97f80b5c-513f-494a-bb44-0804b076edd1"
+        "id": "30ab755a-0be1-4a86-b924-1871e4e24b5b"
     },
     {
-        "name": "tuff",
-        "ap1": 67,
+        "name": "50",
+        "ap1": 50,
         "ap2": {
             "planning": {
-                "main": 59,
-                "extra": null
+                "main": 50,
+                "extra": 100
             },
             "development": {
-                "main": 43,
-                "extra": 65
+                "main": 100,
+                "extra": 50
             },
             "economy": {
-                "main": 83,
-                "extra": null
+                "main": 100,
+                "extra": 100
             }
         },
         "ml": {
-            "presentation": 73,
-            "project": 69
+            "presentation": 50,
+            "project": 100
         },
-        "id": "3f5c3a9a-4caa-4074-b709-42d75e505342"
+        "id": "8e883e0b-99ac-4ade-ae76-35b5f8f2cf2f"
     }
 ]

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
-from model.final_exam_result_input import FinalExamResultInput
-from service.file_service import FileService
-from service.exam_calculation_service import ExamCalculationService
+from backend.app.model.final_exam_result_input import FinalExamResultInput
+from backend.app.service.file_service import FileService
+from backend.app.service.exam_calculation_service import ExamCalculationService
 
 router = APIRouter()
-file_service = FileService("data/storage.json")
+file_service = FileService("backend/data/storage.json")
 exam_calculation_service = ExamCalculationService()
 
 @router.post("/save")
@@ -41,6 +41,9 @@ def update_result(entry_id: str, finalexamresultinput: FinalExamResultInput):
 @router.get("/calculate/{entry_id}")
 def calculate_result(entry_id: str):
     raw = file_service.get_by_id(entry_id)
+
+    if raw is None:
+        raise HTTPException(status_code=404, detail="Entry not found")
 
     if hasattr(raw, "model_dump"):
         data = raw.model_dump()
