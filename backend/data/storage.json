@@ -1,0 +1,48 @@
+[
+    {
+        "name": "string",
+        "ap1": 80,
+        "ap2": {
+            "planning": {
+                "main": 30,
+                "extra": 90
+            },
+            "development": {
+                "main": 50,
+                "extra": null
+            },
+            "economy": {
+                "main": 70,
+                "extra": null
+            }
+        },
+        "ml": {
+            "presentation": 65,
+            "project": 75
+        },
+        "id": "97f80b5c-513f-494a-bb44-0804b076edd1"
+    },
+    {
+        "name": "tuff",
+        "ap1": 67,
+        "ap2": {
+            "planning": {
+                "main": 59,
+                "extra": null
+            },
+            "development": {
+                "main": 43,
+                "extra": 65
+            },
+            "economy": {
+                "main": 83,
+                "extra": null
+            }
+        },
+        "ml": {
+            "presentation": 73,
+            "project": 69
+        },
+        "id": "3f5c3a9a-4caa-4074-b709-42d75e505342"
+    }
+]
