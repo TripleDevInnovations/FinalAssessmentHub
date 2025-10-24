@@ -9,7 +9,7 @@ It provides a simple FastAPI application that can be extended with APIs, databas
 
 - **Python 3.9+**
 - **pip**
-- **virtualenv** or **venv** module
+- **virtualenv** or **venv** module ( ``` python -m venv .venv```)
 
 ### Pycharm Interpreter konfigurieren
 
@@ -31,10 +31,6 @@ It provides a simple FastAPI application that can be extended with APIs, databas
 ---
 
 Activate it:
-
-```bash
-  cd backend
-  ```
 
 - **macOS/Linux:**
   ```bash
