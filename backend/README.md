@@ -84,8 +84,8 @@ backend/
 
 ---
 
-## Notes
+## Tests
 
-- Modify `main.py` to add your routes and business logic.
-- Add new dependencies with `pip install <package>` and run `pip freeze > requirements.txt`.
-- Use `.env` files for local configuration if needed (`python-dotenv` recommended).
+```bash
+pytest
+```
