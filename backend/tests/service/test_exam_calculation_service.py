@@ -1,6 +1,8 @@
 import unittest
+
 from backend.app.model.final_exam_result_input import AP2, AP2Part, FinalExamResultInput, ML
 from backend.app.service.exam_calculation_service import ExamCalculationService
+
 
 class TestExamCalculationService(unittest.TestCase):
 

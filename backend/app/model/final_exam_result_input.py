@@ -1,4 +1,5 @@
 from typing import Optional, Annotated
+
 from pydantic import BaseModel, Field, ConfigDict
 
 Score = Annotated[int, Field(ge=0, le=100, description="Points 0–100")]

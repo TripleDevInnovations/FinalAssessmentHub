@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 
 from backend.app.controller.exam_controller import router
 

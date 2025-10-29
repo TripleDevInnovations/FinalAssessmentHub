@@ -1,6 +1,8 @@
-from typing import Optional, Dict, Any
+from typing import Optional
+
 from backend.app.model.final_exam_result_input import FinalExamResultInput, AP2Part
 from backend.app.model.final_exam_result_output import FinalExamResultOutput
+
 
 class ExamCalculationService:
     WEIGHTS = {
@@ -13,7 +15,7 @@ class ExamCalculationService:
     }
 
     def _grade_from_points(self, points: Optional[int]) -> Optional[int]:
-        if points is None:
+        if points is None or points < 0 or points > 100:
             return None
         p = float(points)
         if p >= 92:
@@ -33,8 +35,6 @@ class ExamCalculationService:
             return None
         main = part.main
         extra = part.extra
-        if main is None and extra is None:
-            return None
         if main is None:
             return None
         if extra is None:
