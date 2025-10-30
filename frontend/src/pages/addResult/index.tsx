@@ -92,9 +92,9 @@ export default function AddResult() {
     Name: form.Name.trim(),
     AP1: Number(form.AP1),
     ap2: {
-      planning: { main: Number(form.AP2_1_1), extra: form.AP2_1_2.trim() === "" ? 0 : Number(form.AP2_1_2) },
-      development: { main: Number(form.AP2_2_1), extra: form.AP2_2_2.trim() === "" ? 0 : Number(form.AP2_2_2) },
-      economy: { main: Number(form.AP2_3_1), extra: form.AP2_3_2.trim() === "" ? 0 : Number(form.AP2_3_2) }
+      planning: { main: Number(form.AP2_1_1), extra: form.AP2_1_2.trim() === "" ? null : Number(form.AP2_1_2) },
+      development: { main: Number(form.AP2_2_1), extra: form.AP2_2_2.trim() === "" ? null : Number(form.AP2_2_2) },
+      economy: { main: Number(form.AP2_3_1), extra: form.AP2_3_2.trim() === "" ? null : Number(form.AP2_3_2) }
     },
     ml: { ML1: Number(form.ML1), ML2: Number(form.ML2) }
   });
@@ -230,7 +230,7 @@ export default function AddResult() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 1.1 (Punkte)"
+                  label="Teil 2.1 (Punkte)"
                   value={form.AP2_1_1}
                   onChange={handleChange("AP2_1_1")}
                   fullWidth
@@ -242,7 +242,7 @@ export default function AddResult() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 1.2 (Zusatzprüfung, optional)"
+                  label="Teil 2.1 (Zusatzprüfung, optional)"
                   value={form.AP2_1_2}
                   onChange={handleChange("AP2_1_2")}
                   fullWidth
@@ -265,7 +265,7 @@ export default function AddResult() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 2.1 (Punkte)"
+                  label="Teil 2.2 (Punkte)"
                   value={form.AP2_2_1}
                   onChange={handleChange("AP2_2_1")}
                   fullWidth
@@ -300,7 +300,7 @@ export default function AddResult() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 3.1 (Punkte)"
+                  label="Teil 2.3 (Punkte)"
                   value={form.AP2_3_1}
                   onChange={handleChange("AP2_3_1")}
                   fullWidth
@@ -312,7 +312,7 @@ export default function AddResult() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 3.2 (Zusatzprüfung, optional)"
+                  label="Teil 2.3 (Zusatzprüfung, optional)"
                   value={form.AP2_3_2}
                   onChange={handleChange("AP2_3_2")}
                   fullWidth

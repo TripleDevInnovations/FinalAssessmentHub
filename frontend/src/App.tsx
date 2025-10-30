@@ -1,22 +1,17 @@
-import React, { useEffect, useMemo, useState } from "react";
+// App.tsx
+import React, { useMemo, useState } from "react";
 import {
   ThemeProvider,
   createTheme,
   CssBaseline,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Tabs,
-  Tab,
   Container
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 
+import AppBarWithTabs from "./components/AppBarWithTabs";
 import AddResult from "./pages/addResult";
 import ListResults from "./pages/listResults";
 
-export default function App(): JSX.Element {
+export default function App() {
   const theme = useMemo(
     () =>
       createTheme({
@@ -25,31 +20,12 @@ export default function App(): JSX.Element {
       }),
     []
   );
-
   const [tab, setTab] = useState(0);
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Prüfungs-Manager
-          </Typography>
-          <Tabs value={tab} onChange={(_, v) => setTab(v)} textColor="inherit" indicatorColor="secondary">
-            <Tab label="Eintrag" />
-            <Tab label="Einträge" />
-          </Tabs>
-        </Toolbar>
-      </AppBar>
-
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        {tab === 0 && <AddResult />}
-        {tab === 1 && <ListResults />}
-      </Container>
+      <AppBarWithTabs onTabChange={setTab} />
+      <Container> {tab === 0 ? <AddResult /> : <ListResults />} </Container>
     </ThemeProvider>
   );
 }
