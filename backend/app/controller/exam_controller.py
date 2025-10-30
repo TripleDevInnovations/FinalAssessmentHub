@@ -14,7 +14,7 @@ def save_numbers(finalexamresultinput: FinalExamResultInput):
     entry = file_service.save(entry=finalexamresultinput.model_dump())
     return {"message": "Numbers saved successfully!", "data": entry}
 
-@router.get("/all")
+@router.get("/list")
 def get_all_results():
     return file_service.load_all()
 

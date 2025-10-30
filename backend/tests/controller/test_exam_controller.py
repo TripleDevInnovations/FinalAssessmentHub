@@ -31,7 +31,7 @@ from unittest.mock import patch, MagicMock
 def test_get_all_results(mock_file_service):
     mock_file_service.load_all.return_value = []
 
-    response = client.get("/exam/all")
+    response = client.get("/exam/list")
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
