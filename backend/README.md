@@ -58,9 +58,9 @@ pip install -r requirements.txt
 ---
 
 ### 3. Run the development server
-
+Please make sure to run this command from the root directory of the monorepo (FinalAssessmentHub)
 ```bash
-uvicorn main:app --reload --host 127.0.0.1 --port 8000
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 Once started, open:
@@ -74,6 +74,9 @@ Once started, open:
 
 ```
 backend/
+├── app
+    ├── controller
+    └── ...
 ├── main.py
 ├── requirements.txt
 └── .venv/            # virtual environment (excluded in .gitignore)
@@ -81,8 +84,8 @@ backend/
 
 ---
 
-## Notes
+## Tests
 
-- Modify `main.py` to add your routes and business logic.
-- Add new dependencies with `pip install <package>` and run `pip freeze > requirements.txt`.
-- Use `.env` files for local configuration if needed (`python-dotenv` recommended).
+```bash
+pytest
+```
