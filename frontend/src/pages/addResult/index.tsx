@@ -3,6 +3,8 @@ import {
   Paper, Box, Typography, Grid, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert
 } from "@mui/material";
 
+import { ExamPayload } from "../../types";
+
 // === Hilfsfunktionen und Konstanten ===
 
 const onlyDigits = (s: string) => s.replace(`/\D+/g`, "");
@@ -105,12 +107,12 @@ export default function AddResult() {
       const keys = key.split('.');
       const next = JSON.parse(JSON.stringify(prev)); // Tiefe Kopie für einfache state-updates
       let current = next;
-      
+
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = processedValue;
-      
+
       // Exklusivität für Zusatzprüfungen
       if (key.includes('extra') && processedValue.trim() !== "") {
         if (key !== 'AP2.planning.extra') next.AP2.planning.extra = "";
@@ -135,7 +137,7 @@ export default function AddResult() {
       'PW.presentation': form.PW.presentation,
       'PW.project': form.PW.project,
     };
-    
+
     // Validierung der Pflichtfelder
     Object.entries(fieldValidations).forEach(([key, value]) => {
       const v = value.trim();
@@ -147,23 +149,23 @@ export default function AddResult() {
 
     // Validierung der optionalen Felder
     const optionalFields = {
-        'AP2.planning.extra': form.AP2.planning.extra,
-        'AP2.development.extra': form.AP2.development.extra,
-        'AP2.economy.extra': form.AP2.economy.extra,
+      'AP2.planning.extra': form.AP2.planning.extra,
+      'AP2.development.extra': form.AP2.development.extra,
+      'AP2.economy.extra': form.AP2.economy.extra,
     }
     Object.entries(optionalFields).forEach(([key, value]) => {
-        const v = value.trim();
-        if(v === "") return;
-        if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
-            newErrors[key] = "Wert muss zwischen 0 und 100 liegen";
-        }
+      const v = value.trim();
+      if (v === "") return;
+      if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
+        newErrors[key] = "Wert muss zwischen 0 und 100 liegen";
+      }
     });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  const buildPayload = () => ({
+
+  const buildPayload = (): ExamPayload => ({
     Name: form.Name.trim(),
     AP1: Number(form.AP1),
     AP2: {
@@ -174,13 +176,14 @@ export default function AddResult() {
     PW: { presentation: Number(form.PW.presentation), project: Number(form.PW.project) }
   });
 
+
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!validate()) {
       setSnackbar({ open: true, severity: "error", message: "Bitte Fehler vor dem Absenden beheben." });
       return;
     }
-    
+
     setLoading(true);
     try {
       const resp = await fetch("http://127.0.0.1:8000/exam/save", {
@@ -241,9 +244,9 @@ export default function AddResult() {
             handleChange={handleChange}
             isExtraDisabled={false}
           />
-          
+
           <Divider sx={{ width: "100%", my: 2 }} />
-          
+
           <ExamPartRow
             title="Abschlussprüfung 2 - Planen eines Softwareproduktes"
             mainField={{ key: "AP2.planning.main", label: "Teil 2.1 (Punkte)", value: form.AP2.planning.main }}
@@ -254,7 +257,7 @@ export default function AddResult() {
           />
 
           <Divider sx={{ width: "100%", my: 2 }} />
-          
+
           <ExamPartRow
             title="Abschlussprüfung 2 - Entwicklung und Umsetzung von Algorithmen"
             mainField={{ key: "AP2.development.main", label: "Teil 2.2 (Punkte)", value: form.AP2.development.main }}
@@ -265,7 +268,7 @@ export default function AddResult() {
           />
 
           <Divider sx={{ width: "100%", my: 2 }} />
-          
+
           <ExamPartRow
             title="Abschlussprüfung 2 - Wirtschafts- und Sozialkunde"
             mainField={{ key: "AP2.economy.main", label: "Teil 2.3 (Punkte)", value: form.AP2.economy.main }}
@@ -278,37 +281,37 @@ export default function AddResult() {
           <Divider sx={{ width: "100%", my: 2 }} />
 
           <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>Betriebliche Projektarbeit</Typography>
-              <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                      <TextField
-                          label="Präsentation"
-                          value={form.PW.presentation}
-                          onChange={(e) => handleChange('PW.presentation', e.target.value)}
-                          fullWidth
-                          required
-                          error={!!errors['PW.presentation']}
-                          helperText={errors['PW.presentation'] ?? "0–100"}
-                          inputProps={numericInputProps}
-                      />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                      <TextField
-                          label="Planung und Umsetzung"
-                          value={form.PW.project}
-                          onChange={(e) => handleChange('PW.project', e.target.value)}
-                          fullWidth
-                          required
-                          error={!!errors['PW.project']}
-                          helperText={errors['PW.project'] ?? "0–100"}
-                          inputProps={numericInputProps}
-                      />
-                  </Grid>
+            <Typography variant="h6" gutterBottom>Betriebliche Projektarbeit</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Präsentation"
+                  value={form.PW.presentation}
+                  onChange={(e) => handleChange('PW.presentation', e.target.value)}
+                  fullWidth
+                  required
+                  error={!!errors['PW.presentation']}
+                  helperText={errors['PW.presentation'] ?? "0–100"}
+                  inputProps={numericInputProps}
+                />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Planung und Umsetzung"
+                  value={form.PW.project}
+                  onChange={(e) => handleChange('PW.project', e.target.value)}
+                  fullWidth
+                  required
+                  error={!!errors['PW.project']}
+                  helperText={errors['PW.project'] ?? "0–100"}
+                  inputProps={numericInputProps}
+                />
+              </Grid>
+            </Grid>
           </Grid>
 
           <Divider sx={{ width: "100%", my: 2 }} />
-          
+
           <Grid item xs={12}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Box sx={{ position: "relative" }}>
@@ -316,7 +319,7 @@ export default function AddResult() {
                   Absenden
                 </Button>
                 {loading && (
-                  <CircularProgress size={24} sx={{ color: "primary.main", position: "absolute", top: "50%", left: "50%", marginTop: "-12px", marginLeft: "-12px" }}/>
+                  <CircularProgress size={24} sx={{ color: "primary.main", position: "absolute", top: "50%", left: "50%", marginTop: "-12px", marginLeft: "-12px" }} />
                 )}
               </Box>
               <Button variant="outlined" color="secondary" onClick={resetForm} disabled={loading}>

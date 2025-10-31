@@ -1,285 +1,135 @@
-import React, { useEffect, useState } from "react";
-import {
-  Typography,
-  Paper,
-  Grid,
-  Button,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Box,
-  Card,
-  CardContent,
-  CardActionArea,
-  CardActions,
-  Avatar,
-  Divider,
-  IconButton,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { useState, useMemo } from "react";
+import { Typography, Paper, Grid, CircularProgress, Snackbar, Alert, Box, IconButton, Drawer, useTheme, useMediaQuery } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useEntries } from "../../hooks/useEntries";
+import EntryListItem from "../../components/EntryListItem";
+import EntryDetail from "../../components/EntryDetail";
 
-/** Typen passend zum Beispiel-JSON */
-interface AP2Category {
-  main: number;
-  extra: number;
-}
-interface AP2 {
-  planning: AP2Category;
-  development: AP2Category;
-  economy: AP2Category;
-}
-interface ML {
-  presentation: number;
-  project: number;
-}
-interface Entry {
-  id: string;
-  name: string;
-  ap1: number;
-  ap2: AP2;
-  ml: ML;
-}
+export default function ListResultsPage(): JSX.Element {
+  const { entries, loading, error, selectedId, setSelectedId, deleteEntry } = useEntries();
+  const [snack, setSnack] = useState({ open: false, msg: "", severity: "success" as const });
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-export default function ListResults(): JSX.Element {
-  const [entries, setEntries] = useState<Entry[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity?: "success" | "error" | "info" }>(
-    { open: false, msg: "", severity: "info" }
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+  const selectedEntry = useMemo(
+    () => entries.find((e) => e.id === selectedId) ?? null,
+    [entries, selectedId]
   );
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const BASE = "http://127.0.0.1:8000";
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchEntries = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`${BASE}/exam/list`);
-        if (!res.ok) throw new Error(`Fehler beim Laden: ${res.status} ${res.statusText}`);
-        const data = (await res.json()) as Entry[];
-        if (mounted) {
-          setEntries(Array.isArray(data) ? data : []);
-          // falls noch keine Auswahl vorhanden ist, erste wählen
-          if (!selectedId && Array.isArray(data) && data.length > 0) {
-            setSelectedId(data[0].id);
-          }
-        }
-      } catch (err: any) {
-        console.error(err);
-        if (mounted) setError(err?.message ?? "Unbekannter Fehler");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-    fetchEntries();
-    return () => {
-      mounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // nur beim Mount laden
 
   const handleDelete = async (id: string) => {
-    const ok = window.confirm("Eintrag wirklich löschen?");
-    if (!ok) return;
+    if (!window.confirm("Eintrag wirklich löschen?")) return;
     try {
-      const res = await fetch(`${BASE}/exam/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        let bodyMsg = "";
-        try {
-          const text = await res.text();
-          if (text) bodyMsg = ` — ${text}`;
-        } catch {}
-        throw new Error(`Löschen fehlgeschlagen: ${res.status}${bodyMsg}`);
-      }
-      setEntries((prev) => prev.filter((e) => e.id !== id));
-      // falls das gelöschte Element ausgewählt war, wähle ein neues (oder null)
-      setSelectedId((cur) => {
-        if (cur === id) {
-          const remaining = entries.filter((e) => e.id !== id);
-          return remaining.length > 0 ? remaining[0].id : null;
-        }
-        return cur;
-      });
+      await deleteEntry(id);
       setSnack({ open: true, msg: "Eintrag gelöscht", severity: "success" });
     } catch (err: any) {
-      console.error(err);
-      setSnack({ open: true, msg: `Löschen fehlgeschlagen: ${err?.message ?? "Unbekannter Fehler"}`, severity: "error" });
+      setSnack({ open: true, msg: `Fehler: ${err.message}`, severity: "error" });
     }
   };
 
-  const selectedEntry = entries.find((e) => e.id === selectedId) ?? null;
+  const handleSnackClose = () => setSnack((s) => ({ ...s, open: false }));
 
-  return (
-    <Paper elevation={3} sx={{  p: { xs: 2, md: 4 }, borderRadius: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Gespeicherte Einträge ({entries.length})
-      </Typography>
-
-      {loading ? (
+  const renderContent = () => {
+    if (loading) {
+      return (
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <CircularProgress size={20} />
           <Typography>lade Einträge…</Typography>
         </Box>
-      ) : error ? (
-        <Paper sx={{ p: 2 }}>
-          <Typography color="error">Fehler: {error}</Typography>
+      );
+    }
+    if (error) {
+      return <Typography color="error">Fehler: {error}</Typography>;
+    }
+    if (entries.length === 0) {
+      return <Typography color="text.secondary">Noch keine Einträge vorhanden.</Typography>;
+    }
+
+    const listContent = (
+    <Paper sx={{ height: '100%', overflow: 'auto', border: 'none', boxShadow: 'none', p: 1, backgroundColor: 'transparent' }}>
+      {entries.map((entry) => (
+        <EntryListItem
+          key={entry.id}
+          entry={entry}
+          isSelected={entry.id === selectedId}
+          onSelect={(id) => {
+            setSelectedId(id);
+            if (isMobile) {
+              setDrawerOpen(false);
+            }
+          }}
+        />
+      ))}
+    </Paper>
+  );
+
+  // Mobile Ansicht
+  if (isMobile) {
+    return (
+      <>
+        <IconButton
+          color="inherit"
+          aria-label="Menü öffnen"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mb: 2 }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Drawer
+          variant="temporary"
+          open={drawerOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+          sx={{ '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280, p: 1 } }}
+        >
+          {listContent}
+        </Drawer>
+        <Paper sx={{ p: 2, minHeight: '70vh' }}>
+          <EntryDetail
+            entry={selectedEntry}
+            onDelete={handleDelete}
+            onUnselect={() => setSelectedId(null)}
+          />
         </Paper>
-      ) : entries.length === 0 ? (
-        <Paper sx={{ p: 2 }}>
-          <Typography color="text.secondary">Noch keine Einträge vorhanden.</Typography>
+      </>
+    );
+  }
+
+  // Desktop Ansicht
+  return (
+    <Grid container spacing={2}>
+      <Grid item md={4} sx={{ height: '75vh' }}>
+        {listContent}
+      </Grid>
+      <Grid item md={8}>
+        <Paper sx={{ p: 2, height: '100%' }}>
+          <EntryDetail
+            entry={selectedEntry}
+            onDelete={handleDelete}
+            onUnselect={() => setSelectedId(null)}
+          />
         </Paper>
-      ) : (
-        <Grid container spacing={2}>
-          {/* LEFT: Liste der Namen als Cards */}
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 1, height: "70vh", overflow: "auto" }}>
-              <Box sx={{ display: "flex", gap: 1, flexDirection: "column" }}>
-                {entries.map((entry) => {
-                  const isSelected = entry.id === selectedId;
-                  const initials = entry.name
-                    .split(" ")
-                    .map((s) => s[0]?.toUpperCase() ?? "")
-                    .slice(0, 2)
-                    .join("");
-                  return (
-                    <Card
-                      key={entry.id}
-                      variant="outlined"
-                      sx={{
-                        mb: 1,
-                        borderColor: isSelected ? "primary.main" : undefined,
-                        boxShadow: isSelected ? 3 : 0,
-                      }}
-                    >
-                      <CardActionArea onClick={() => setSelectedId(entry.id)}>
-                        <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                          <Avatar>{initials}</Avatar>
-                          <Box sx={{ flexGrow: 1 }}>
-                            <Typography noWrap fontWeight={isSelected ? 600 : 500}>
-                              {entry.name}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap>
-                              ID: {entry.id}
-                            </Typography>
-                          </Box>
-                        </CardContent>
-                      </CardActionArea>
-                    </Card>
-                  );
-                })}
-              </Box>
-            </Paper>
-          </Grid>
+      </Grid>
+    </Grid>
+  );
+};
 
-          {/* RIGHT: Detail-View */}
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2, minHeight: "70vh" }}>
-              {selectedEntry ? (
-                <Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2 }}>
-                    <Box>
-                      <Typography variant="h6">{selectedEntry.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        ID: {selectedEntry.id}
-                      </Typography>
-                    </Box>
 
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <IconButton
-                        color="error"
-                        aria-label="löschen"
-                        onClick={() => handleDelete(selectedEntry.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  </Box>
+  return (
+    <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
+      <Typography variant="h5" gutterBottom>
+        Gespeicherte Einträge ({entries.length})
+      </Typography>
 
-                  <Divider sx={{ my: 2 }} />
+      {renderContent()}
 
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
-                      <Paper variant="outlined" sx={{ p: 1 }}>
-                        <Typography variant="subtitle2">AP1</Typography>
-                        <Typography fontSize="1.25rem" fontWeight={600}>
-                          {selectedEntry.ap1}
-                        </Typography>
-                      </Paper>
-                    </Grid>
-
-                    <Grid item xs={12} sm={8}>
-                      <Paper variant="outlined" sx={{ p: 1 }}>
-                        <Typography variant="subtitle2">Mündliche Leistungen</Typography>
-                        <Typography>
-                          Presentation: <strong>{selectedEntry.ml?.presentation ?? "-"}</strong> — Project:{" "}
-                          <strong>{selectedEntry.ml?.project ?? "-"}</strong>
-                        </Typography>
-                      </Paper>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <Paper variant="outlined" sx={{ p: 1 }}>
-                        <Typography variant="subtitle2" gutterBottom>
-                          AP2 Details
-                        </Typography>
-
-                        <Grid container spacing={1}>
-                          <Grid item xs={12} sm={4}>
-                            <Typography variant="caption">Planning</Typography>
-                            <Typography>
-                              Main: <strong>{selectedEntry.ap2?.planning?.main ?? "-"}</strong> / Extra:{" "}
-                              <strong>{selectedEntry.ap2?.planning?.extra ?? "-"}</strong>
-                            </Typography>
-                          </Grid>
-
-                          <Grid item xs={12} sm={4}>
-                            <Typography variant="caption">Development</Typography>
-                            <Typography>
-                              Main: <strong>{selectedEntry.ap2?.development?.main ?? "-"}</strong> / Extra:{" "}
-                              <strong>{selectedEntry.ap2?.development?.extra ?? "-"}</strong>
-                            </Typography>
-                          </Grid>
-
-                          <Grid item xs={12} sm={4}>
-                            <Typography variant="caption">Economy</Typography>
-                            <Typography>
-                              Main: <strong>{selectedEntry.ap2?.economy?.main ?? "-"}</strong> / Extra:{" "}
-                              <strong>{selectedEntry.ap2?.economy?.extra ?? "-"}</strong>
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-
-                  <CardActions sx={{ justifyContent: "flex-end", mt: 2 }}>
-                    <Button variant="outlined" onClick={() => setSelectedId(null)}>
-                      Auswahl aufheben
-                    </Button>
-                  </CardActions>
-                </Box>
-              ) : (
-                <Box sx={{ textAlign: "center", py: 6 }}>
-                  <Typography variant="h6" color="text.secondary">
-                    Wähle links einen Eintrag aus, um die Details anzuzeigen.
-                  </Typography>
-                </Box>
-              )}
-            </Paper>
-          </Grid>
-        </Grid>
-      )}
-
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={4000}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} sx={{ width: "100%" }}>
+      <Snackbar open={snack.open} autoHideDuration={4000} onClose={handleSnackClose}>
+        <Alert onClose={handleSnackClose} severity={snack.severity} sx={{ width: "100%" }}>
           {snack.msg}
         </Alert>
       </Snackbar>
