@@ -11,14 +11,14 @@ client = TestClient(app)
 VALID_PAYLOAD = {
     "Name": "test name",
     "AP1": 85,
-    "ap2": {
+    "AP2": {
         "planning": {"main": 90},
         "development": {"main": 88, "extra": 92},
         "economy": {"main": 78}
     },
-    "ml": {
-        "ML1": 95,
-        "ML2": 98
+    "PW": {
+        "presentation": 95,
+        "project": 98
     }
 }
 

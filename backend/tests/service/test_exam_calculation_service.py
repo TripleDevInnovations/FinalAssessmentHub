@@ -1,6 +1,6 @@
 import unittest
 
-from backend.app.model.final_exam_result_input import AP2, AP2Part, FinalExamResultInput, ML
+from backend.app.model.final_exam_result_input import AP2, AP2Part, FinalExamResultInput, PW
 from backend.app.service.exam_calculation_service import ExamCalculationService
 
 
@@ -37,12 +37,12 @@ class TestExamCalculationService(unittest.TestCase):
     def test_calculate_exam_results_full_input(self):
         full_input = FinalExamResultInput(
             AP1=90,
-            ap2=AP2(
+            AP2=AP2(
                 planning=AP2Part(main=80, extra=70),
                 development=AP2Part(main=85, extra=None),
                 economy=AP2Part(main=95, extra=95)
             ),
-            ml=ML(ML1=92, ML2=88)
+            PW=PW(presentation=92, project=88)
         )
 
         result = self.service.calculateExamResults(full_input)
@@ -59,11 +59,11 @@ class TestExamCalculationService(unittest.TestCase):
         self.assertEqual(result.AP2.economy.points, 95)
         self.assertEqual(result.AP2.economy.grade, 1)
 
-        self.assertEqual(result.ML.project.points, 88)
-        self.assertEqual(result.ML.project.grade, 2)
+        self.assertEqual(result.PW.project.points, 88)
+        self.assertEqual(result.PW.project.grade, 2)
 
-        self.assertEqual(result.ML.presentation.points, 92)
-        self.assertEqual(result.ML.presentation.grade, 1)
+        self.assertEqual(result.PW.presentation.points, 92)
+        self.assertEqual(result.PW.presentation.grade, 1)
 
         self.assertEqual(result.overall.points, 89)
         self.assertEqual(result.overall.grade, 2)
@@ -71,8 +71,8 @@ class TestExamCalculationService(unittest.TestCase):
     def test_calculate_exam_results_partial_input(self):
         partial_input = FinalExamResultInput(
             AP1=80,
-            ap2=None,
-            ml=ML(ML1=95, ML2=90)
+            AP2=None,
+            PW=PW(presentation=95, project=90)
         )
 
         result = self.service.calculateExamResults(partial_input)
@@ -80,11 +80,11 @@ class TestExamCalculationService(unittest.TestCase):
         self.assertEqual(result.AP1.points, 80)
         self.assertEqual(result.AP1.grade, 3)
 
-        self.assertEqual(result.ML.project.points, 90)
-        self.assertEqual(result.ML.project.grade, 2)
+        self.assertEqual(result.PW.project.points, 90)
+        self.assertEqual(result.PW.project.grade, 2)
 
-        self.assertEqual(result.ML.presentation.points, 95)
-        self.assertEqual(result.ML.presentation.grade, 1)
+        self.assertEqual(result.PW.presentation.points, 95)
+        self.assertEqual(result.PW.presentation.grade, 1)
 
         self.assertIsNone(result.AP2.planning.grade)
         self.assertIsNone(result.AP2.planning.points)
@@ -97,7 +97,7 @@ class TestExamCalculationService(unittest.TestCase):
         self.assertEqual(result.overall.grade, 2)
 
     def test_calculate_exam_results_empty_input(self):
-        empty_input = FinalExamResultInput(ap1=None, ap2=None, ml=None)
+        empty_input = FinalExamResultInput(AP1=None, AP2=None, PW=None)
 
         result = self.service.calculateExamResults(empty_input)
 
@@ -109,9 +109,9 @@ class TestExamCalculationService(unittest.TestCase):
         self.assertIsNone(result.AP2.development.points)
         self.assertIsNone(result.AP2.economy.grade)
         self.assertIsNone(result.AP2.economy.points)
-        self.assertIsNone(result.ML.presentation.grade)
-        self.assertIsNone(result.ML.presentation.points)
-        self.assertIsNone(result.ML.project.grade)
-        self.assertIsNone(result.ML.project.points)
+        self.assertIsNone(result.PW.presentation.grade)
+        self.assertIsNone(result.PW.presentation.points)
+        self.assertIsNone(result.PW.project.grade)
+        self.assertIsNone(result.PW.project.points)
         self.assertIsNone(result.overall.grade)
         self.assertIsNone(result.overall.points)
