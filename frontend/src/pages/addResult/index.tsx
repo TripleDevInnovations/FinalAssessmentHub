@@ -175,7 +175,7 @@ export default function AddResult() {
           Prüfungsergebnisse eintragen
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Trage Name und Punktzahlen (0–100) ein und klicke auf Absenden.
+          Trage Nickname und Punktzahlen (0–100) ein und klicke auf Absenden.
         </Typography>
       </Box>
 
@@ -183,7 +183,7 @@ export default function AddResult() {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              label="Name"
+              label="Nickname"
               value={form.Name}
               onChange={handleChange("Name")}
               fullWidth
@@ -204,7 +204,7 @@ export default function AddResult() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Abschlussprüfung 1 - Punkte"
+                  label="Teil 1 (Punkte)"
                   value={form.AP1}
                   onChange={handleChange("AP1")}
                   fullWidth
@@ -225,7 +225,7 @@ export default function AddResult() {
           {/* AP2 - Teil 1 */}
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 2 — Teil 1
+              Abschlussprüfung 2 - Planen eines Softwareproduktes
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -242,13 +242,13 @@ export default function AddResult() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 2.1 (Zusatzprüfung, optional)"
+                  label="Teil 2.1 (MEPR)"
                   value={form.AP2_1_2}
                   onChange={handleChange("AP2_1_2")}
                   fullWidth
                   disabled={extrasDisabled.AP2_1_2}
                   error={!!errors.AP2_1_2}
-                  helperText={extrasDisabled.AP2_1_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_1_2 ?? "falls vorhanden"}
+                  helperText={extrasDisabled.AP2_1_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_1_2 ?? "optional"}
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
                 />
               </Grid>
@@ -260,7 +260,7 @@ export default function AddResult() {
           {/* AP2 - Teil 2 */}
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 2 — Teil 2
+              Abschlussprüfung 2 - Entwicklung und Umsetzung von Algorithmen
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -277,13 +277,13 @@ export default function AddResult() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 2.2 (Zusatzprüfung, optional)"
+                  label="Teil 2.2 (MEPR)"
                   value={form.AP2_2_2}
                   onChange={handleChange("AP2_2_2")}
                   fullWidth
                   disabled={extrasDisabled.AP2_2_2}
                   error={!!errors.AP2_2_2}
-                  helperText={extrasDisabled.AP2_2_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_2_2 ?? "falls vorhanden"}
+                  helperText={extrasDisabled.AP2_2_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_2_2 ?? "optional"}
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
                 />
               </Grid>
@@ -295,7 +295,7 @@ export default function AddResult() {
           {/* AP2 - Teil 3 */}
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 2 — Teil 3
+              Abschlussprüfung 2 - Wirtschafts- und Sozialkunde
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -312,13 +312,13 @@ export default function AddResult() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Teil 2.3 (Zusatzprüfung, optional)"
+                  label="Teil 2.3 (MEPR)"
                   value={form.AP2_3_2}
                   onChange={handleChange("AP2_3_2")}
                   fullWidth
                   disabled={extrasDisabled.AP2_3_2}
                   error={!!errors.AP2_3_2}
-                  helperText={extrasDisabled.AP2_3_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_3_2 ?? "falls vorhanden"}
+                  helperText={extrasDisabled.AP2_3_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_3_2 ?? "optional"}
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
                 />
               </Grid>
@@ -327,15 +327,15 @@ export default function AddResult() {
 
           <Divider sx={{ width: "100%", my: 2 }} />
 
-          {/* Mündliche Leistungen */}
+          {/* Betriebliche Projektarbeit */}
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
-              Mündliche Leistungen
+              Betriebliche Projektarbeit
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Mündliche Leistung 1"
+                  label="Präsentation"
                   value={form.ML1}
                   onChange={handleChange("ML1")}
                   fullWidth
@@ -348,7 +348,7 @@ export default function AddResult() {
 
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Mündliche Leistung 2"
+                  label="Planung und Umsetzung"
                   value={form.ML2}
                   onChange={handleChange("ML2")}
                   fullWidth

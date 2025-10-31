@@ -1,31 +1,31 @@
-// App.tsx
-import React, { useMemo, useState } from "react";
-import {
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
-  Container
-} from "@mui/material";
-
-import AppBarWithTabs from "./components/AppBarWithTabs";
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import TopBar from "./components/TopBar";
+import TabPanel from "./components/TabPanel";
 import AddResult from "./pages/addResult";
 import ListResults from "./pages/listResults";
 
-export default function App() {
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: { mode: "light", primary: { main: "#1976d2" }, secondary: { main: "#00bfa5" } },
-        components: { MuiButton: { defaultProps: { disableElevation: true } } }
-      }),
-    []
-  );
-  const [tab, setTab] = useState(0);
+const App: React.FC = () => {
+  const [tabIndex, setTabIndex] = useState<number>(0);
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBarWithTabs onTabChange={setTab} />
-      <Container> {tab === 0 ? <AddResult /> : <ListResults />} </Container>
-    </ThemeProvider>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+      <TopBar value={tabIndex} onChange={handleTabChange} />
+      <Container sx={{ py: 4 }}>
+        <TabPanel value={tabIndex} index={0}>
+          <AddResult />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={1}>
+          <ListResults />
+        </TabPanel>
+      </Container>
+    </Box>
   );
-}
+};
+
+export default App;
