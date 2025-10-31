@@ -6,6 +6,9 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
+import SettingsIcon from "@mui/icons-material/Settings";
+import InfoIcon from "@mui/icons-material/Info";
+
 
 import logo_white from "../assets/logo_white.png";
 
@@ -46,6 +49,18 @@ const TopBar: React.FC<TopBarProps> = ({ value, onChange, title = "Final Assessm
           >
             <Tab label="Hinzufügen" id="tab-0" aria-controls="tabpanel-0" />
             <Tab label="Ergebnisse" id="tab-1" aria-controls="tabpanel-1" />
+            <Tab
+              icon={<SettingsIcon />}
+              id="tab-2"
+              aria-controls="tabpanel-2"
+              aria-label="Einstellungen"
+            />
+            <Tab
+              icon={<InfoIcon />}
+              id="tab-3"
+              aria-controls="tabpanel-3"
+              aria-label="Information"
+            />
           </Tabs>
         </Box>
       </Toolbar>

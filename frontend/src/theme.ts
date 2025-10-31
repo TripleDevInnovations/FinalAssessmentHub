@@ -1,12 +1,14 @@
+import { PaletteMode } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#1976d2",
+const getTheme = (mode: PaletteMode) =>
+  createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: "#1976d2",
+      },
     },
-    mode: "light",
-  },
-});
+  });
 
-export default theme;
+export default getTheme;

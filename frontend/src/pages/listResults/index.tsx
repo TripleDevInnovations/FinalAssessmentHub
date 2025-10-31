@@ -1,6 +1,17 @@
 import { useState, useMemo } from "react";
-import { Typography, Paper, Grid, CircularProgress, Snackbar, Alert, Box, IconButton, Drawer, useTheme, useMediaQuery } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import {
+  Typography,
+  Grid,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  Box,
+  IconButton,
+  Drawer,
+  useTheme,
+  useMediaQuery,
+  Paper,
+} from "@mui/material";
 import { useEntries } from "../../hooks/useEntries";
 import EntryListItem from "../../components/EntryListItem";
 import EntryDetail from "../../components/EntryDetail";
@@ -12,14 +23,7 @@ export default function ListResultsPage(): JSX.Element {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
-  const selectedEntry = useMemo(
-    () => entries.find((e) => e.id === selectedId) ?? null,
-    [entries, selectedId]
-  );
+  const selectedEntry = useMemo(() => entries.find((e) => e.id === selectedId) ?? null, [entries, selectedId]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Eintrag wirklich löschen?")) return;
@@ -33,101 +37,86 @@ export default function ListResultsPage(): JSX.Element {
 
   const handleSnackClose = () => setSnack((s) => ({ ...s, open: false }));
 
+  const listContent = (
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Typography variant="h6" sx={{ p: 2, pb: 1 }}>
+        Einträge ({entries.length})
+      </Typography>
+      <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
+        {entries.map((entry) => (
+          <EntryListItem
+            key={entry.id}
+            entry={entry}
+            isSelected={entry.id === selectedId}
+            onSelect={(id) => {
+              setSelectedId(id);
+              if (isMobile) {
+                setDrawerOpen(false);
+              }
+            }}
+          />
+        ))}
+      </Box>
+    </Box>
+  );
+
   const renderContent = () => {
     if (loading) {
       return (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, p: 2 }}>
           <CircularProgress size={20} />
           <Typography>lade Einträge…</Typography>
         </Box>
       );
     }
     if (error) {
-      return <Typography color="error">Fehler: {error}</Typography>;
+      return <Typography color="error" sx={{p: 2}}>Fehler: {error}</Typography>;
     }
     if (entries.length === 0) {
-      return <Typography color="text.secondary">Noch keine Einträge vorhanden.</Typography>;
+      return <Typography color="text.secondary" sx={{p: 2}}>Noch keine Einträge vorhanden.</Typography>;
     }
 
-    const listContent = (
-    <Paper sx={{ height: '100%', overflow: 'auto', border: 'none', boxShadow: 'none', p: 1, backgroundColor: 'transparent' }}>
-      {entries.map((entry) => (
-        <EntryListItem
-          key={entry.id}
-          entry={entry}
-          isSelected={entry.id === selectedId}
-          onSelect={(id) => {
-            setSelectedId(id);
-            if (isMobile) {
-              setDrawerOpen(false);
-            }
-          }}
-        />
-      ))}
-    </Paper>
-  );
+    // Mobile Ansicht: Liste im Drawer, Details im Hauptbereich
+    if (isMobile) {
+      return (
+        <>
+          <Drawer
+            variant="temporary"
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            ModalProps={{ keepMounted: true }}
+            sx={{ '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 300 } }}
+          >
+            {listContent}
+          </Drawer>
+          <EntryDetail
+            entry={selectedEntry}
+            onDelete={handleDelete}
+            onMenu={() => setDrawerOpen(true)}
+          />
+        </>
+      );
+    }
 
-  // Mobile Ansicht
-  if (isMobile) {
+    // Desktop Ansicht: Zweigeteiltes Layout
     return (
-      <>
-        <IconButton
-          color="inherit"
-          aria-label="Menü öffnen"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mb: 2 }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Drawer
-          variant="temporary"
-          open={drawerOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{ '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280, p: 1 } }}
-        >
+      <Grid container sx={{ height: 'calc(100vh - 200px)' /* Höhe anpassen */ }}>
+        <Grid item md={4} lg={3} sx={{ borderRight: '1px solid', borderColor: 'divider', height: '100%' }}>
           {listContent}
-        </Drawer>
-        <Paper sx={{ p: 2, minHeight: '70vh' }}>
+        </Grid>
+        <Grid item md={8} lg={9} sx={{ height: '100%', overflowY: 'auto' }}>
           <EntryDetail
             entry={selectedEntry}
             onDelete={handleDelete}
-            onUnselect={() => setSelectedId(null)}
           />
-        </Paper>
-      </>
+        </Grid>
+      </Grid>
     );
-  }
-
-  // Desktop Ansicht
-  return (
-    <Grid container spacing={2}>
-      <Grid item md={4} sx={{ height: '75vh' }}>
-        {listContent}
-      </Grid>
-      <Grid item md={8}>
-        <Paper sx={{ p: 2, height: '100%' }}>
-          <EntryDetail
-            entry={selectedEntry}
-            onDelete={handleDelete}
-            onUnselect={() => setSelectedId(null)}
-          />
-        </Paper>
-      </Grid>
-    </Grid>
-  );
-};
-
+  };
 
   return (
-    <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Gespeicherte Einträge ({entries.length})
-      </Typography>
-
+    <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
       {renderContent()}
-
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={handleSnackClose}>
         <Alert onClose={handleSnackClose} severity={snack.severity} sx={{ width: "100%" }}>
           {snack.msg}

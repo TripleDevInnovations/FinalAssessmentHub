@@ -34,11 +34,11 @@ Activate it:
 
 - **macOS/Linux:**
   ```bash
-  source .venv/bin/activate
+  source backend/.venv/bin/activate
   ```
 - **Windows (PowerShell):**
   ```powershell
-  .\.venv\Scripts\Activate.ps1
+  backend\.venv\Scripts\Activate.ps1
   ```
 
 ---

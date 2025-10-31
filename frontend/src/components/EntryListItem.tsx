@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardActionArea, CardContent, Avatar, Box, Typography } from "@mui/material";
+import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar } from "@mui/material";
 import { Entry } from "../types";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-const EntryListItem = ({ entry, isSelected, onSelect }: EntryListItemProps) => {
+const EntryListItem = ({ entry, isSelected, onSelect }: Props) => {
   const initials = entry.name
     .split(' ')
     .map((s) => s[0]?.toUpperCase() ?? '')
@@ -16,26 +16,27 @@ const EntryListItem = ({ entry, isSelected, onSelect }: EntryListItemProps) => {
     .join('');
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        mb: 1,
-        borderColor: isSelected ? 'primary.main' : 'transparent',
-        boxShadow: isSelected ? 3 : 0,
-        transition: 'box-shadow 0.2s, border-color 0.2s',
-      }}
-    >
-      <CardActionArea onClick={() => onSelect(entry.id)}>
-        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ bgcolor: isSelected ? 'primary.main' : 'grey.500' }}>
+    <ListItem disablePadding>
+      <ListItemButton
+        selected={isSelected}
+        onClick={() => onSelect(entry.id)}
+        sx={{
+          borderRadius: 2,
+          m: 1,
+          '&.Mui-selected': {
+            backgroundColor: 'action.selected',
+            fontWeight: 'bold',
+          }
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar sx={{ bgcolor: isSelected ? 'primary.main' : 'grey.500', color: 'white' }}>
             {initials}
           </Avatar>
-          <Typography noWrap fontWeight={isSelected ? 600 : 500}>
-            {entry.name}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+        </ListItemAvatar>
+        <ListItemText primary={entry.name} primaryTypographyProps={{ noWrap: true }} />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
