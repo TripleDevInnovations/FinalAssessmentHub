@@ -1,102 +1,177 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
-  Paper,
-  Box,
-  Typography,
-  Grid,
-  TextField,
-  Divider,
-  Stack,
-  Button,
-  CircularProgress,
-  Snackbar,
-  Alert
+  Paper, Box, Typography, Grid, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert
 } from "@mui/material";
 
-const onlyDigits = (s: string) => s.replace(/\D+/g, "");
+// === Hilfsfunktionen und Konstanten ===
+
+const onlyDigits = (s: string) => s.replace(`/\D+/g`, "");
+
+// Definieren des Formularzustands an einer zentralen Stelle für einfaches Zurücksetzen
+const initialFormState = {
+  Name: "",
+  AP1: "",
+  AP2: {
+    planning: { main: "", extra: "" },
+    development: { main: "", extra: "" },
+    economy: { main: "", extra: "" },
+  },
+  PW: {
+    presentation: "",
+    project: "",
+  },
+};
+
+type FormState = typeof initialFormState;
+type FormErrors = { [key: string]: any }; // Für Einfachheit, kann detaillierter typisiert werden
+
+// Props für numerische Felder, um Wiederholungen im JSX zu vermeiden
+const numericInputProps = {
+  inputMode: "numeric" as const,
+  pattern: "`[0-9]*`",
+  min: 0,
+  max: 100,
+};
+
+// === Wiederverwendbare Sub-Komponente für Prüfungsabschnitte ===
+
+interface ExamPartRowProps {
+  title: string;
+  mainField: { key: string; label: string; value: string };
+  extraField?: { key: string; label: string; value: string };
+  errors: FormErrors;
+  handleChange: (key: string, value: string) => void;
+  isExtraDisabled: boolean;
+}
+
+const ExamPartRow: React.FC<ExamPartRowProps> = ({ title, mainField, extraField, errors, handleChange, isExtraDisabled }) => (
+  <Grid item xs={12}>
+    <Typography variant="h6" gutterBottom>{title}</Typography>
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          label={mainField.label}
+          value={mainField.value}
+          onChange={(e) => handleChange(mainField.key, e.target.value)}
+          fullWidth
+          required
+          error={!!errors[mainField.key]}
+          helperText={errors[mainField.key] ?? "0–100"}
+          inputProps={numericInputProps}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        {extraField && (
+          <TextField
+            label={extraField.label}
+            value={extraField.value}
+            onChange={(e) => handleChange(extraField.key, e.target.value)}
+            fullWidth
+            disabled={isExtraDisabled}
+            error={!!errors[extraField.key]}
+            helperText={isExtraDisabled ? "Deaktiviert, da eine andere Zusatzprüfung aktiv ist" : (errors[extraField.key] ?? "Optional")}
+            inputProps={numericInputProps}
+          />
+        )}
+      </Grid>
+    </Grid>
+  </Grid>
+);
+
+
+// === Hauptkomponente ===
 
 export default function AddResult() {
-  const [form, setForm] = useState({
-    Name: "",
-    AP1: "",
-    AP2_1_1: "",
-    AP2_1_2: "",
-    AP2_2_1: "",
-    AP2_2_2: "",
-    AP2_3_1: "",
-    AP2_3_2: "",
-    ML1: "",
-    ML2: ""
-  });
-
-  const [errors, setErrors] = useState<any>({});
+  const [form, setForm] = useState<FormState>(initialFormState);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState<{ open: boolean; severity: "success" | "error"; message: string }>({
-    open: false,
-    severity: "success",
-    message: ""
-  });
+  const [snackbar, setSnackbar] = useState({ open: false, severity: "success" as const, message: "" });
 
-  const validate = () => {
-    const newErrors: any = {};
-    if (!form.Name.trim()) newErrors.Name = "Name ist erforderlich.";
+  // UseMemo, um zu verhindern, dass die Logik bei jedem Render neu berechnet wird
+  const extrasDisabled = useMemo(() => {
+    const filledExtras = [form.AP2.planning.extra, form.AP2.development.extra, form.AP2.economy.extra].filter(Boolean);
+    return {
+      planning: filledExtras.length > 0 && !form.AP2.planning.extra,
+      development: filledExtras.length > 0 && !form.AP2.development.extra,
+      economy: filledExtras.length > 0 && !form.AP2.economy.extra,
+    };
+  }, [form.AP2]);
 
-    const required = ["AP1", "AP2_1_1", "AP2_2_1", "AP2_3_1", "ML1", "ML2"];
-    required.forEach((k) => {
-      const v = (form as any)[k].trim();
-      if (v === "") newErrors[k] = "Erforderlich";
-      else if (!/^\d+$/.test(v)) newErrors[k] = "Nur ganze Zahlen (0–100)";
-      else if (Number(v) < 0 || Number(v) > 100) newErrors[k] = "Wert muss zwischen 0 und 100 liegen";
-    });
+  const handleChange = useCallback((key: string, value: string) => {
+    const isNumeric = !key.includes("Name");
+    let processedValue = isNumeric ? onlyDigits(value).slice(0, 3) : value;
 
-    const optional = ["AP2_1_2", "AP2_2_2", "AP2_3_2"];
-    optional.forEach((k) => {
-      const v = (form as any)[k].trim();
-      if (v === "") return;
-      if (!/^\d+$/.test(v)) newErrors[k] = "Nur ganze Zahlen (0–100)";
-      else if (Number(v) < 0 || Number(v) > 100) newErrors[k] = "Wert muss zwischen 0 und 100 liegen";
-    });
-
-    const zusatzFilled = optional.map((k) => (form as any)[k].trim() !== "").filter(Boolean).length;
-    if (zusatzFilled > 1) optional.forEach((k) => (newErrors[k] = "Es darf höchstens eine Zusatzprüfung ausgefüllt sein"));
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    let v = e.target.value;
-    if (key !== "Name") {
-      v = onlyDigits(v);
-      if (v.length > 3) v = v.slice(0, 3);
-    }
-
-    setForm((p) => {
-      const next = { ...p, [key]: v };
-
-      // exclusivity for extras: if one extra is set, clear the others
-      const extras = ["AP2_1_2", "AP2_2_2", "AP2_3_2"];
-      if (extras.includes(key) && v.trim() !== "") {
-        for (const other of extras) {
-          if (other !== key) (next as any)[other] = "";
-        }
+    setForm((prev) => {
+      const keys = key.split('.');
+      const next = JSON.parse(JSON.stringify(prev)); // Tiefe Kopie für einfache state-updates
+      let current = next;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = processedValue;
+      
+      // Exklusivität für Zusatzprüfungen
+      if (key.includes('extra') && processedValue.trim() !== "") {
+        if (key !== 'AP2.planning.extra') next.AP2.planning.extra = "";
+        if (key !== 'AP2.development.extra') next.AP2.development.extra = "";
+        if (key !== 'AP2.economy.extra') next.AP2.economy.extra = "";
       }
 
       return next;
     });
+    setErrors((prev) => ({ ...prev, [key]: undefined }));
+  }, []);
 
-    setErrors((p) => ({ ...p, [key]: undefined }));
+  const validate = () => {
+    const newErrors: FormErrors = {};
+    if (!form.Name.trim()) newErrors.Name = "Name ist erforderlich.";
+
+    const fieldValidations = {
+      'AP1': form.AP1,
+      'AP2.planning.main': form.AP2.planning.main,
+      'AP2.development.main': form.AP2.development.main,
+      'AP2.economy.main': form.AP2.economy.main,
+      'PW.presentation': form.PW.presentation,
+      'PW.project': form.PW.project,
+    };
+    
+    // Validierung der Pflichtfelder
+    Object.entries(fieldValidations).forEach(([key, value]) => {
+      const v = value.trim();
+      if (v === "") newErrors[key] = "Erforderlich";
+      else if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
+        newErrors[key] = "Wert muss zwischen 0 und 100 liegen";
+      }
+    });
+
+    // Validierung der optionalen Felder
+    const optionalFields = {
+        'AP2.planning.extra': form.AP2.planning.extra,
+        'AP2.development.extra': form.AP2.development.extra,
+        'AP2.economy.extra': form.AP2.economy.extra,
+    }
+    Object.entries(optionalFields).forEach(([key, value]) => {
+        const v = value.trim();
+        if(v === "") return;
+        if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
+            newErrors[key] = "Wert muss zwischen 0 und 100 liegen";
+        }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-
+  
   const buildPayload = () => ({
     Name: form.Name.trim(),
     AP1: Number(form.AP1),
-    ap2: {
-      planning: { main: Number(form.AP2_1_1), extra: form.AP2_1_2.trim() === "" ? null : Number(form.AP2_1_2) },
-      development: { main: Number(form.AP2_2_1), extra: form.AP2_2_2.trim() === "" ? null : Number(form.AP2_2_2) },
-      economy: { main: Number(form.AP2_3_1), extra: form.AP2_3_2.trim() === "" ? null : Number(form.AP2_3_2) }
+    AP2: {
+      planning: { main: Number(form.AP2.planning.main), extra: form.AP2.planning.extra.trim() === "" ? null : Number(form.AP2.planning.extra) },
+      development: { main: Number(form.AP2.development.main), extra: form.AP2.development.extra.trim() === "" ? null : Number(form.AP2.development.extra) },
+      economy: { main: Number(form.AP2.economy.main), extra: form.AP2.economy.extra.trim() === "" ? null : Number(form.AP2.economy.extra) }
     },
-    ml: { ML1: Number(form.ML1), ML2: Number(form.ML2) }
+    PW: { presentation: Number(form.PW.presentation), project: Number(form.PW.project) }
   });
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -105,54 +180,20 @@ export default function AddResult() {
       setSnackbar({ open: true, severity: "error", message: "Bitte Fehler vor dem Absenden beheben." });
       return;
     }
-
-    const payload = buildPayload();
-
+    
     setLoading(true);
     try {
       const resp = await fetch("http://127.0.0.1:8000/exam/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(buildPayload()),
       });
-
       if (resp.ok) {
-        // versuche JSON zu parsen; falls kein JSON zurückgegeben wird, nutze payload als Fallback
-        let data: any = null;
-        try {
-          // manche Endpunkte liefern evtl. keinen Body => .json() würde werfen
-          data = await resp.json();
-        } catch {
-          data = null;
-        }
-
         setSnackbar({ open: true, severity: "success", message: "Erfolgreich gespeichert." });
-
-        // Wenn der Server eine Antwort zurückgibt, liefern wir diese an onSave weiter.
-        // Falls nicht, liefern wir als Fallback das gesendete payload (ohne lokale Speicherung).
-
-        // reset form
-        setForm({
-          Name: "",
-          AP1: "",
-          AP2_1_1: "",
-          AP2_1_2: "",
-          AP2_2_1: "",
-          AP2_2_2: "",
-          AP2_3_1: "",
-          AP2_3_2: "",
-          ML1: "",
-          ML2: ""
-        });
+        setForm(initialFormState);
         setErrors({});
       } else {
-        // nicht ok (Status 4xx/5xx) => keine onSave, lediglich Fehler anzeigen
-        let text = "";
-        try {
-          text = await resp.text();
-        } catch {
-          text = `${resp.status} ${resp.statusText}`;
-        }
+        const text = await resp.text() || `${resp.status} ${resp.statusText}`;
         setSnackbar({ open: true, severity: "error", message: `Serverfehler: ${text}` });
       }
     } catch (err: any) {
@@ -162,21 +203,18 @@ export default function AddResult() {
     }
   };
 
-  const extrasDisabled = {
-    AP2_1_2: form.AP2_2_2.trim() !== "" || form.AP2_3_2.trim() !== "",
-    AP2_2_2: form.AP2_1_2.trim() !== "" || form.AP2_3_2.trim() !== "",
-    AP2_3_2: form.AP2_1_2.trim() !== "" || form.AP2_2_2.trim() !== ""
-  };
+  const resetForm = () => {
+    setForm(initialFormState);
+    setErrors({});
+  }
+
+  const handleSnackbarClose = () => setSnackbar((s) => ({ ...s, open: false }));
 
   return (
     <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
       <Box mb={2}>
-        <Typography variant="h5" component="h1" gutterBottom>
-          Prüfungsergebnisse eintragen
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Trage Nickname und Punktzahlen (0–100) ein und klicke auf Absenden.
-        </Typography>
+        <Typography variant="h5" component="h1" gutterBottom>Prüfungsergebnisse eintragen</Typography>
+        <Typography variant="body2" color="text.secondary">Trage Nickname und Punktzahlen (0–100) ein und klicke auf Absenden.</Typography>
       </Box>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -185,7 +223,7 @@ export default function AddResult() {
             <TextField
               label="Nickname"
               value={form.Name}
-              onChange={handleChange("Name")}
+              onChange={(e) => handleChange('Name', e.target.value)}
               fullWidth
               required
               error={!!errors.Name}
@@ -194,213 +232,94 @@ export default function AddResult() {
             />
           </Grid>
 
-          <Divider sx={{ width: "100%", my: 1 }} />
+          <Divider sx={{ width: "100%", my: 2 }} />
 
-          {/* AP1 */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 1
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 1 (Punkte)"
-                  value={form.AP1}
-                  onChange={handleChange("AP1")}
-                  fullWidth
-                  required
-                  error={!!errors.AP1}
-                  helperText={errors.AP1 ?? "0–100"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ height: "100%" }} />
-              </Grid>
-            </Grid>
-          </Grid>
+          <ExamPartRow
+            title="Abschlussprüfung 1"
+            mainField={{ key: "AP1", label: "Teil 1 (Punkte)", value: form.AP1 }}
+            errors={errors}
+            handleChange={handleChange}
+            isExtraDisabled={false}
+          />
+          
+          <Divider sx={{ width: "100%", my: 2 }} />
+          
+          <ExamPartRow
+            title="Abschlussprüfung 2 - Planen eines Softwareproduktes"
+            mainField={{ key: "AP2.planning.main", label: "Teil 2.1 (Punkte)", value: form.AP2.planning.main }}
+            extraField={{ key: "AP2.planning.extra", label: "Teil 2.1 (MEPR)", value: form.AP2.planning.extra }}
+            errors={errors}
+            handleChange={handleChange}
+            isExtraDisabled={extrasDisabled.planning}
+          />
+
+          <Divider sx={{ width: "100%", my: 2 }} />
+          
+          <ExamPartRow
+            title="Abschlussprüfung 2 - Entwicklung und Umsetzung von Algorithmen"
+            mainField={{ key: "AP2.development.main", label: "Teil 2.2 (Punkte)", value: form.AP2.development.main }}
+            extraField={{ key: "AP2.development.extra", label: "Teil 2.2 (MEPR)", value: form.AP2.development.extra }}
+            errors={errors}
+            handleChange={handleChange}
+            isExtraDisabled={extrasDisabled.development}
+          />
+
+          <Divider sx={{ width: "100%", my: 2 }} />
+          
+          <ExamPartRow
+            title="Abschlussprüfung 2 - Wirtschafts- und Sozialkunde"
+            mainField={{ key: "AP2.economy.main", label: "Teil 2.3 (Punkte)", value: form.AP2.economy.main }}
+            extraField={{ key: "AP2.economy.extra", label: "Teil 2.3 (MEPR)", value: form.AP2.economy.extra }}
+            errors={errors}
+            handleChange={handleChange}
+            isExtraDisabled={extrasDisabled.economy}
+          />
 
           <Divider sx={{ width: "100%", my: 2 }} />
 
-          {/* AP2 - Teil 1 */}
           <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 2 - Planen eines Softwareproduktes
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 2.1 (Punkte)"
-                  value={form.AP2_1_1}
-                  onChange={handleChange("AP2_1_1")}
-                  fullWidth
-                  required
-                  error={!!errors.AP2_1_1}
-                  helperText={errors.AP2_1_1 ?? "0–100"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
+              <Typography variant="h6" gutterBottom>Betriebliche Projektarbeit</Typography>
+              <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                      <TextField
+                          label="Präsentation"
+                          value={form.PW.presentation}
+                          onChange={(e) => handleChange('PW.presentation', e.target.value)}
+                          fullWidth
+                          required
+                          error={!!errors['PW.presentation']}
+                          helperText={errors['PW.presentation'] ?? "0–100"}
+                          inputProps={numericInputProps}
+                      />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                      <TextField
+                          label="Planung und Umsetzung"
+                          value={form.PW.project}
+                          onChange={(e) => handleChange('PW.project', e.target.value)}
+                          fullWidth
+                          required
+                          error={!!errors['PW.project']}
+                          helperText={errors['PW.project'] ?? "0–100"}
+                          inputProps={numericInputProps}
+                      />
+                  </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 2.1 (MEPR)"
-                  value={form.AP2_1_2}
-                  onChange={handleChange("AP2_1_2")}
-                  fullWidth
-                  disabled={extrasDisabled.AP2_1_2}
-                  error={!!errors.AP2_1_2}
-                  helperText={extrasDisabled.AP2_1_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_1_2 ?? "optional"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-            </Grid>
           </Grid>
 
           <Divider sx={{ width: "100%", my: 2 }} />
-
-          {/* AP2 - Teil 2 */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 2 - Entwicklung und Umsetzung von Algorithmen
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 2.2 (Punkte)"
-                  value={form.AP2_2_1}
-                  onChange={handleChange("AP2_2_1")}
-                  fullWidth
-                  required
-                  error={!!errors.AP2_2_1}
-                  helperText={errors.AP2_2_1 ?? "0–100"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 2.2 (MEPR)"
-                  value={form.AP2_2_2}
-                  onChange={handleChange("AP2_2_2")}
-                  fullWidth
-                  disabled={extrasDisabled.AP2_2_2}
-                  error={!!errors.AP2_2_2}
-                  helperText={extrasDisabled.AP2_2_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_2_2 ?? "optional"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ width: "100%", my: 2 }} />
-
-          {/* AP2 - Teil 3 */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Abschlussprüfung 2 - Wirtschafts- und Sozialkunde
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 2.3 (Punkte)"
-                  value={form.AP2_3_1}
-                  onChange={handleChange("AP2_3_1")}
-                  fullWidth
-                  required
-                  error={!!errors.AP2_3_1}
-                  helperText={errors.AP2_3_1 ?? "0–100"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Teil 2.3 (MEPR)"
-                  value={form.AP2_3_2}
-                  onChange={handleChange("AP2_3_2")}
-                  fullWidth
-                  disabled={extrasDisabled.AP2_3_2}
-                  error={!!errors.AP2_3_2}
-                  helperText={extrasDisabled.AP2_3_2 ? "Deaktiviert, weil eine andere Zusatzprüfung ausgefüllt wurde" : errors.AP2_3_2 ?? "optional"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ width: "100%", my: 2 }} />
-
-          {/* Betriebliche Projektarbeit */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Betriebliche Projektarbeit
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Präsentation"
-                  value={form.ML1}
-                  onChange={handleChange("ML1")}
-                  fullWidth
-                  required
-                  error={!!errors.ML1}
-                  helperText={errors.ML1 ?? "0–100"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Planung und Umsetzung"
-                  value={form.ML2}
-                  onChange={handleChange("ML2")}
-                  fullWidth
-                  required
-                  error={!!errors.ML2}
-                  helperText={errors.ML2 ?? "0–100"}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 0, max: 100 }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-
+          
           <Grid item xs={12}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Box sx={{ position: "relative" }}>
-                <Button variant="contained" color="primary" type="submit" disabled={loading} onClick={handleSubmit}>
+                <Button variant="contained" color="primary" type="submit" disabled={loading}>
                   Absenden
                 </Button>
                 {loading && (
-                  <CircularProgress
-                    size={24}
-                    sx={{
-                      color: "primary.main",
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      marginTop: "-12px",
-                      marginLeft: "-12px"
-                    }}
-                  />
+                  <CircularProgress size={24} sx={{ color: "primary.main", position: "absolute", top: "50%", left: "50%", marginTop: "-12px", marginLeft: "-12px" }}/>
                 )}
               </Box>
-
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() =>
-                  setForm({
-                    Name: "",
-                    AP1: "",
-                    AP2_1_1: "",
-                    AP2_1_2: "",
-                    AP2_2_1: "",
-                    AP2_2_2: "",
-                    AP2_3_1: "",
-                    AP2_3_2: "",
-                    ML1: "",
-                    ML2: ""
-                  })
-                }
-                disabled={loading}
-              >
+              <Button variant="outlined" color="secondary" onClick={resetForm} disabled={loading}>
                 Zurücksetzen
               </Button>
             </Stack>
@@ -411,10 +330,10 @@ export default function AddResult() {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={() => setSnackbar((s) => ({ ...s, open: false }))} severity={snackbar.severity} sx={{ width: "100%" }}>
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
           {snackbar.message}
         </Alert>
       </Snackbar>

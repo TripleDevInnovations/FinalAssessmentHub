@@ -10,8 +10,8 @@ class ExamCalculationService:
         "ap2_planning": 0.10,
         "ap2_development": 0.10,
         "ap2_economy": 0.10,
-        "ml_project": 0.25,
-        "ml_presentation": 0.25
+        "pw_project": 0.25,
+        "pw_presentation": 0.25
     }
 
     def _grade_from_points(self, points: Optional[int]) -> Optional[int]:
@@ -55,16 +55,16 @@ class ExamCalculationService:
             finalExamResult.ap2.economy if (finalExamResult.ap2 is not None and finalExamResult.ap2.economy is not None) else None
         )
 
-        ml_project_points = round(finalExamResult.ml.project) if (finalExamResult.ml is not None and finalExamResult.ml.project is not None) else None
-        ml_presentation_points = round(finalExamResult.ml.presentation) if (finalExamResult.ml is not None and finalExamResult.ml.presentation is not None) else None
+        pw_project_points = round(finalExamResult.pw.project) if (finalExamResult.pw is not None and finalExamResult.pw.project is not None) else None
+        pw_presentation_points = round(finalExamResult.pw.presentation) if (finalExamResult.pw is not None and finalExamResult.pw.presentation is not None) else None
 
         components = {
             "ap1": {"points": ap1_points, "grade": self._grade_from_points(ap1_points)},
             "ap2_planning": {"points": ap2_planning_points, "grade": self._grade_from_points(ap2_planning_points)},
             "ap2_development": {"points": ap2_development_points, "grade": self._grade_from_points(ap2_development_points)},
             "ap2_economy": {"points": ap2_economy_points, "grade": self._grade_from_points(ap2_economy_points)},
-            "ml_project": {"points": ml_project_points, "grade": self._grade_from_points(ml_project_points)},
-            "ml_presentation": {"points": ml_presentation_points, "grade": self._grade_from_points(ml_presentation_points)},
+            "pw_project": {"points": pw_project_points, "grade": self._grade_from_points(pw_project_points)},
+            "pw_presentation": {"points": pw_presentation_points, "grade": self._grade_from_points(pw_presentation_points)},
         }
 
         weighted_sum = 0.0

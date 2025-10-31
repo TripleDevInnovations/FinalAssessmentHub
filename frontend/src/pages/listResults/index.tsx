@@ -57,7 +57,7 @@ export default function ListResults(): JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`${BASE}/exam/all`);
+        const res = await fetch(`${BASE}/exam/list`);
         if (!res.ok) throw new Error(`Fehler beim Laden: ${res.status} ${res.statusText}`);
         const data = (await res.json()) as Entry[];
         if (mounted) {

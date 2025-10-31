@@ -20,9 +20,9 @@ class AP2Output(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
-class MLOutput(BaseModel):
-    project: Optional[ComponentResult] = Field(None, description="ML - Project (ML2)")
-    presentation: Optional[ComponentResult] = Field(None, description="ML - Presentation (ML1)")
+class PWOutput(BaseModel):
+    project: Optional[ComponentResult] = Field(None, description="PW - Project")
+    presentation: Optional[ComponentResult] = Field(None, description="PW - Presentation")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -30,7 +30,7 @@ class MLOutput(BaseModel):
 class FinalExamResultOutput(BaseModel):
     AP1: Optional[ComponentResult] = Field(None, description="AP1 result")
     AP2: Optional[AP2Output] = Field(None, description="AP2 results")
-    ML: Optional[MLOutput] = Field(None, description="ML results")
+    PW: Optional[PWOutput] = Field(None, description="Project Work results")
     overall: Optional[ComponentResult] = Field(None, description="Overall weighted result")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
@@ -49,14 +49,14 @@ class FinalExamResultOutput(BaseModel):
             economy=to_component("ap2_economy")
         )
 
-        ml = MLOutput(
-            presentation=to_component("ml_presentation"),
-            project=to_component("ml_project")
+        pw = PWOutput(
+            presentation=to_component("pw_presentation"),
+            project=to_component("pw_project")
         )
 
         return cls(
             AP1=to_component("ap1"),
             AP2=ap2,
-            ML=ml,
+            PW=pw,
             overall=to_component("overall")
         )
