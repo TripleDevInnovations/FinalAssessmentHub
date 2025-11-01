@@ -36,3 +36,23 @@ export interface ExamPayload {
     project: number;
   };
 }
+
+interface GradeAndPoints {
+  points: number;
+  grade: number;
+}
+
+export interface CalculationResult {
+  AP1: GradeAndPoints;
+  AP2: {
+    planning: GradeAndPoints;
+    development: GradeAndPoints;
+    economy: GradeAndPoints;
+  };
+  PW: {
+    project: GradeAndPoints;
+    presentation: GradeAndPoints;
+  };
+  overall: GradeAndPoints;
+}
+

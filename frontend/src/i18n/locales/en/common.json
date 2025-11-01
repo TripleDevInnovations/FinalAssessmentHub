@@ -75,7 +75,11 @@
         "exam_2": "Final Exam 2",
         "plan_software_product": "Planning a Software Product",
         "development_and_implementation": "Development and Implementation",
-        "economics_and_social_studies": "Economics and Social Studies"
+        "economics_and_social_studies": "Economics and Social Studies",
+        "calculation_result": "Calculation Result",
+        "overall_result": "overall result",
+        "grade": "Grade",
+        "calculate_button": "Calculate"
     },
     "settings": {
         "title": "My Little App",

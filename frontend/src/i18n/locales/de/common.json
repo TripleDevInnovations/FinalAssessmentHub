@@ -75,7 +75,11 @@
         "exam_2": "Abschlussprüfung 2",
         "plan_software_product": "Planen eines Softwareproduktes",
         "development_and_implementation": "Entwicklung und Umsetzung",
-        "economics_and_social_studies": "Wirtschafts- und Sozialkunde"
+        "economics_and_social_studies": "Wirtschafts- und Sozialkunde",
+        "calculation_result": "Berechnungsergebnis",
+        "overall_result": "Gesamtergebnis",
+        "grade": "Note",
+        "calculate_button": "Berechnen"
     },
     "settings": {
         "title": "Meine kleine App",
