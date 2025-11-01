@@ -6,17 +6,18 @@ import {
   Snackbar,
   Alert,
   Box,
-  IconButton,
   Drawer,
   useTheme,
   useMediaQuery,
   Paper,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useEntries } from "../../hooks/useEntries";
 import EntryListItem from "../../components/EntryListItem";
 import EntryDetail from "../../components/EntryDetail";
 
 export default function ListResultsPage(): JSX.Element {
+  const { t } = useTranslation();
   const { entries, loading, error, selectedId, setSelectedId, deleteEntry } = useEntries();
   const [snack, setSnack] = useState({ open: false, msg: "", severity: "success" as const });
   const theme = useTheme();
@@ -26,12 +27,12 @@ export default function ListResultsPage(): JSX.Element {
   const selectedEntry = useMemo(() => entries.find((e) => e.id === selectedId) ?? null, [entries, selectedId]);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Eintrag wirklich löschen?")) return;
+    if (!window.confirm(t('results.confirm_delete_entry'))) return;
     try {
       await deleteEntry(id);
-      setSnack({ open: true, msg: "Eintrag gelöscht", severity: "success" });
+      setSnack({ open: true, msg: t('results.entry_deleted'), severity: "success" });
     } catch (err: any) {
-      setSnack({ open: true, msg: `Fehler: ${err.message}`, severity: "error" });
+      setSnack({ open: true, msg: `${t('results.error_prefix')}: ${err.message}`, severity: "error" });
     }
   };
 
@@ -39,9 +40,7 @@ export default function ListResultsPage(): JSX.Element {
 
   const listContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Typography variant="h6" sx={{ p: 2, pb: 1 }}>
-        Einträge ({entries.length})
-      </Typography>
+      <Typography variant="h6" sx={{ p: 2, pb: 1 }}>{t('results.entries_count', { count: entries.length })}</Typography>
       <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
         {entries.map((entry) => (
           <EntryListItem
@@ -65,18 +64,18 @@ export default function ListResultsPage(): JSX.Element {
       return (
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, p: 2 }}>
           <CircularProgress size={20} />
-          <Typography>lade Einträge…</Typography>
+          <Typography>{t('results.loading_entries')}</Typography>
         </Box>
       );
     }
     if (error) {
-      return <Typography color="error" sx={{p: 2}}>Fehler: {error}</Typography>;
+      return <Typography color="error" sx={{p: 2}}>{t('results.error_prefix')}: {error}</Typography>;
     }
     if (entries.length === 0) {
-      return <Typography color="text.secondary" sx={{p: 2}}>Noch keine Einträge vorhanden.</Typography>;
+      return <Typography color="text.secondary" sx={{p: 2}}>{t('results.no_entries_yet')}</Typography>;
     }
 
-    // Mobile Ansicht: Liste im Drawer, Details im Hauptbereich
+    // Mobile Ansicht
     if (isMobile) {
       return (
         <>
@@ -98,9 +97,9 @@ export default function ListResultsPage(): JSX.Element {
       );
     }
 
-    // Desktop Ansicht: Zweigeteiltes Layout
+    // Desktop Ansicht
     return (
-      <Grid container sx={{ height: 'calc(100vh - 200px)' /* Höhe anpassen */ }}>
+      <Grid container sx={{ height: 'calc(100vh - 200px)' }}>
         <Grid item md={4} lg={3} sx={{ borderRight: '1px solid', borderColor: 'divider', height: '100%' }}>
           {listContent}
         </Grid>

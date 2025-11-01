@@ -1,0 +1,94 @@
+{
+    "topbar": {
+        "title": "Final Assessment Hub",
+        "logoAlt": "Logo",
+        "mainMenu": "Hauptmenü Tabs",
+        "add": "Hinzufügen",
+        "results": "Ergebnisse",
+        "settings": "Einstellungen",
+        "info": "Information"
+    },
+    "add": {
+        "title": "Prüfungsergebnisse eintragen",
+        "subtitle": "Trage Nickname und Punktzahlen (0–100) ein und klicke auf Absenden.",
+        "nicknameLabel": "Nickname",
+        "submitButton": "Absenden",
+        "resetButton": "Zurücksetzen",
+        "ap1": {
+            "title": "Abschlussprüfung 1",
+            "mainLabel": "Teil 1 (Punkte)"
+        },
+        "ap2": {
+            "planning": {
+                "title": "Abschlussprüfung 2 - Planen eines Softwareproduktes",
+                "mainLabel": "Teil 2.1 (Punkte)",
+                "extraLabel": "Teil 2.1 (MEPR)"
+            },
+            "development": {
+                "title": "Abschlussprüfung 2 - Entwicklung und Umsetzung von Algorithmen",
+                "mainLabel": "Teil 2.2 (Punkte)",
+                "extraLabel": "Teil 2.2 (MEPR)"
+            },
+            "economy": {
+                "title": "Abschlussprüfung 2 - Wirtschafts- und Sozialkunde",
+                "mainLabel": "Teil 2.3 (Punkte)",
+                "extraLabel": "Teil 2.3 (MEPR)"
+            }
+        },
+        "projectWork": {
+            "title": "Betriebliche Projektarbeit",
+            "presentationLabel": "Präsentation",
+            "implementationLabel": "Planung und Umsetzung"
+        },
+        "helper": {
+            "pointsRange": "0–100",
+            "optional": "Optional",
+            "extraDisabled": "Deaktiviert, da eine andere Zusatzprüfung aktiv ist"
+        },
+        "validation": {
+            "nameRequired": "Name ist erforderlich.",
+            "required": "Erforderlich",
+            "valueBetween": "Wert muss zwischen 0 und 100 liegen"
+        },
+        "snackbar": {
+            "validationError": "Bitte Fehler vor dem Absenden beheben.",
+            "saveSuccess": "Erfolgreich gespeichert.",
+            "serverError": "Serverfehler: {{error}}",
+            "networkError": "Netzwerkfehler: {{error}}"
+        }
+    },
+    "results": {
+        "confirm_delete_entry": "Eintrag wirklich löschen?",
+        "entry_deleted": "Eintrag gelöscht",
+        "error_prefix": "Fehler",
+        "entries_count": "Einträge ({{count}})",
+        "loading_entries": "lade Einträge…",
+        "no_entries_yet": "Noch keine Einträge vorhanden.",
+        "select_entry_prompt": "Wähle einen Eintrag aus der Liste aus, um die Details zu sehen.",
+        "open_menu_aria": "Menü öffnen",
+        "delete_aria": "löschen",
+        "exam_1": "Abschlussprüfung 1",
+        "points": "Punkte",
+        "project_work": "Betriebliche Projektarbeit",
+        "presentation": "Präsentation",
+        "documentation": "Dokumentation",
+        "exam_2": "Abschlussprüfung 2",
+        "plan_software_product": "Planen eines Softwareproduktes",
+        "development_and_implementation": "Entwicklung und Umsetzung",
+        "economics_and_social_studies": "Wirtschafts- und Sozialkunde"
+    },
+    "settings": {
+        "title": "Meine kleine App",
+        "home_welcome": "Willkommen auf der Startseite",
+        "about_text": "Das ist die Über-uns-Seite.",
+        "contact_text": "Kontaktiere uns.",
+        "settings_text": "Einstellungen",
+        "change_language": "Sprache wechseln",
+        "settings_change_language_note": "Wähle die Anzeigesprache (wird nicht gespeichert).",
+        "appearance": "Darstellung",
+        "dark_mode": "Dunkel",
+        "light_mode": "Hell",
+        "toggle_theme_button": "Darstellung wechseln",
+        "note_no_persist": "Die Auswahl wird nicht gespeichert; beim Neuladen wird die Standard-Sprache genutzt."
+    }
+}
