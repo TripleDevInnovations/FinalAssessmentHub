@@ -14,12 +14,12 @@ VALID_PAYLOAD = {
     "AP2": {
         "planning": {"main": 90},
         "development": {"main": 88, "extra": 92},
-        "economy": {"main": 78}
+        "economy": {"main": 78},
+        "pw": {
+            "project": 98,
+            "presentation": 95
+        }
     },
-    "PW": {
-        "presentation": 95,
-        "project": 98
-    }
 }
 
 MOCK_ENTRY = {"id": "some_test_id", **VALID_PAYLOAD}
