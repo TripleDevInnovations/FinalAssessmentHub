@@ -3,10 +3,14 @@ import { initReactI18next } from "react-i18next";
 
 import deCommon from "./locales/de/common.json";
 import enCommon from "./locales/en/common.json";
+import ruCommon from "./locales/ru/common.json";
+import arCommon from "./locales/ar/common.json";
 
 export const resources = {
   de: { common: deCommon },
   en: { common: enCommon },
+  ru: { common: ruCommon },
+  ar: { common: arCommon },
 } as const;
 
 i18n

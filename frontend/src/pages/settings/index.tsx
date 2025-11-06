@@ -21,6 +21,8 @@ type Props = {
 const languages = [
   { code: 'de', label: 'Deutsch' },
   { code: 'en', label: 'English' },
+  { code: 'ru', label: 'Русский' },
+  { code: 'ar', label: 'العربية' },
 ];
 
 const SettingsPage: React.FC<Props> = ({ toggleColorMode, currentMode }) => {
@@ -44,7 +46,7 @@ const SettingsPage: React.FC<Props> = ({ toggleColorMode, currentMode }) => {
         </Box>
 
         <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="language-select-label">Sprache</InputLabel>
+          <InputLabel id="language-select-label">{t('settings.language')}</InputLabel>
           <Select
             labelId="language-select-label"
             id="language-select"

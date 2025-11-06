@@ -1,0 +1,98 @@
+{
+    "topbar": {
+        "title": "Центр Итоговой Аттестации",
+        "logoAlt": "Логотип",
+        "mainMenu": "Основные вкладки меню",
+        "add": "Добавить",
+        "results": "Результаты",
+        "settings": "Настройки",
+        "info": "Информация"
+    },
+    "add": {
+        "title": "Ввод Результатов Экзамена",
+        "subtitle": "Введите никнейм и оценки (0–100), затем нажмите Отправить.",
+        "nicknameLabel": "Никнейм",
+        "submitButton": "Отправить",
+        "resetButton": "Сбросить",
+        "ap1": {
+            "title": "Итоговый Экзамен 1",
+            "mainLabel": "Часть 1 (Баллы)"
+        },
+        "ap2": {
+            "planning": {
+                "title": "Итоговый Экзамен 2 — Планирование Программного Продукта",
+                "mainLabel": "Часть 2.1 (Баллы)",
+                "extraLabel": "Часть 2.1 (МЭПР)"
+            },
+            "development": {
+                "title": "Итоговый Экзамен 2 — Разработка и Реализация Алгоритмов",
+                "mainLabel": "Часть 2.2 (Баллы)",
+                "extraLabel": "Часть 2.2 (МЭПР)"
+            },
+            "economy": {
+                "title": "Итоговый Экзамен 2 — Экономика и Обществознание",
+                "mainLabel": "Часть 2.3 (Баллы)",
+                "extraLabel": "Часть 2.3 (МЭПР)"
+            }
+        },
+        "projectWork": {
+            "title": "Проектная Работа в Компании",
+            "presentationLabel": "Презентация",
+            "implementationLabel": "Планирование и Реализация"
+        },
+        "helper": {
+            "pointsRange": "0–100",
+            "optional": "Необязательно",
+            "extraDisabled": "Отключено, потому что активен другой дополнительный экзамен"
+        },
+        "validation": {
+            "nameRequired": "Имя обязательно.",
+            "required": "Обязательно",
+            "valueBetween": "Значение должно быть между 0 и 100"
+        },
+        "snackbar": {
+            "validationError": "Пожалуйста, исправьте ошибки перед отправкой.",
+            "saveSuccess": "Успешно сохранено.",
+            "serverError": "Ошибка сервера: {{error}}",
+            "networkError": "Ошибка сети: {{error}}"
+        }
+    },
+    "results": {
+        "confirm_delete_entry": "Действительно удалить запись?",
+        "entry_deleted": "Запись удалена",
+        "error_prefix": "Ошибка",
+        "entries_count": "Записи ({{count}})",
+        "loading_entries": "Загрузка записей…",
+        "no_entries_yet": "Записей пока нет.",
+        "select_entry_prompt": "Выберите запись из списка, чтобы просмотреть детали.",
+        "open_menu_aria": "Открыть меню",
+        "delete_aria": "удалить",
+        "exam_1": "Итоговый Экзамен 1",
+        "points": "Баллы",
+        "project_work": "Проектная Работа в Компании",
+        "presentation": "Презентация",
+        "documentation": "Документация",
+        "exam_2": "Итоговый Экзамен 2",
+        "plan_software_product": "Планирование Программного Продукта",
+        "development_and_implementation": "Разработка и Реализация",
+        "economics_and_social_studies": "Экономика и Обществознание",
+        "calculation_result": "Результат Вычисления",
+        "overall_result": "итоговый результат",
+        "grade": "Оценка",
+        "calculate_button": "Рассчитать"
+    },
+    "settings": {
+        "title": "Моё Маленькое Приложение",
+        "home_welcome": "Добро пожаловать на Главную страницу",
+        "language": "язык",
+        "contact_text": "Свяжитесь с нами.",
+        "settings_text": "Настройки",
+        "change_language": "Сменить язык",
+        "settings_change_language_note": "Выберите язык интерфейса (не сохраняется).",
+        "appearance": "Внешний вид",
+        "dark_mode": "Тёмная тема",
+        "light_mode": "Светлая тема",
+        "toggle_theme_button": "Переключить тему",
+        "note_no_persist": "Выбор не сохраняется; при перезагрузке используется язык по умолчанию."
+    }
+}

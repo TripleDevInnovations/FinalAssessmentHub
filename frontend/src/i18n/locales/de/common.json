@@ -84,7 +84,7 @@
     "settings": {
         "title": "Meine kleine App",
         "home_welcome": "Willkommen auf der Startseite",
-        "about_text": "Das ist die Über-uns-Seite.",
+        "language": "Sprache",
         "contact_text": "Kontaktiere uns.",
         "settings_text": "Einstellungen",
         "change_language": "Sprache wechseln",
@@ -94,5 +94,6 @@
         "light_mode": "Hell",
         "toggle_theme_button": "Darstellung wechseln",
         "note_no_persist": "Die Auswahl wird nicht gespeichert; beim Neuladen wird die Standard-Sprache genutzt."
-    }
+    },
+    "about": {}
 }
