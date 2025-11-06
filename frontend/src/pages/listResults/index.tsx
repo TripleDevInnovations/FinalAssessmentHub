@@ -24,7 +24,10 @@ export default function ListResultsPage(): JSX.Element {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const selectedEntry = useMemo(() => entries.find((e) => e.id === selectedId) ?? null, [entries, selectedId]);
+  const selectedEntry = useMemo(
+    () => entries.find((e) => e.id === selectedId) ?? null,
+    [entries, selectedId]
+  );
 
   const handleDelete = async (id: string) => {
     if (!window.confirm(t('results.confirm_delete_entry'))) return;
@@ -40,7 +43,9 @@ export default function ListResultsPage(): JSX.Element {
 
   const listContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Typography variant="h6" sx={{ p: 2, pb: 1 }}>{t('results.entries_count', { count: entries.length })}</Typography>
+      <Typography variant="h6" sx={{ p: 2, pb: 1 }}>
+        {t('results.entries_count', { count: entries.length })}
+      </Typography>
       <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
         {entries.map((entry) => (
           <EntryListItem
@@ -69,10 +74,10 @@ export default function ListResultsPage(): JSX.Element {
       );
     }
     if (error) {
-      return <Typography color="error" sx={{p: 2}}>{t('results.error_prefix')}: {error}</Typography>;
+      return <Typography color="error" sx={{ p: 2 }}>{t('results.error_prefix')}: {error}</Typography>;
     }
     if (entries.length === 0) {
-      return <Typography color="text.secondary" sx={{p: 2}}>{t('results.no_entries_yet')}</Typography>;
+      return <Typography color="text.secondary" sx={{ p: 2 }}>{t('results.no_entries_yet')}</Typography>;
     }
 
     // Mobile Ansicht
@@ -99,11 +104,27 @@ export default function ListResultsPage(): JSX.Element {
 
     // Desktop Ansicht
     return (
-      <Grid container sx={{ height: 'calc(100vh - 200px)' }}>
-        <Grid item md={4} lg={3} sx={{ borderRight: '1px solid', borderColor: 'divider', height: '100%' }}>
+      <Grid container sx={{ height: 'calc(100vh - 200px)', flexWrap: 'nowrap' }}> {/* Hinzugefügte Änderung */}
+        <Grid
+          item
+          sx={{
+            borderRight: '1px solid',
+            borderColor: 'divider',
+            height: '100%',
+            flex: '0 0 auto',
+          }}
+        >
           {listContent}
         </Grid>
-        <Grid item md={8} lg={9} sx={{ height: '100%', overflowY: 'auto' }}>
+        <Grid
+          item
+          sx={{
+            height: '100%',
+            overflowY: 'auto',
+            flex: '1 1 auto',
+            minWidth: 0, // wichtig, damit overflowY korrekt funktioniert
+          }}
+        >
           <EntryDetail
             entry={selectedEntry}
             onDelete={handleDelete}

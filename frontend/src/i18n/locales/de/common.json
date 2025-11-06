@@ -73,13 +73,24 @@
         "presentation": "Präsentation",
         "documentation": "Dokumentation",
         "exam_2": "Abschlussprüfung 2",
+        "exam2_subtitle": "Schriftlich",
         "plan_software_product": "Planen eines Softwareproduktes",
         "development_and_implementation": "Entwicklung und Umsetzung",
         "economics_and_social_studies": "Wirtschafts- und Sozialkunde",
         "calculation_result": "Berechnungsergebnis",
-        "overall_result": "Gesamtergebnis",
+        "overall": "Gesamtergebnis",
         "grade": "Note",
-        "calculate_button": "Berechnen"
+        "calculate_button": "Berechnen",
+        "calculated": "Berechnet",
+        "speak": {
+            "ap1": "Abschlussprüfung Teil 1: Notee {{grade}} mit {{points}} Punkten.",
+            "ap2_planning": "Abschlussprüfung Teil 2: Planen eines Softwareproduktes: Notee {{grade}} mit {{points}} Punkten.",
+            "ap2_development": "Entwicklung und Umsetzung: Notee {{grade}} mit {{points}} Punkten.",
+            "ap2_economy": "Wirtschafts- und Sozialkunde: Notee {{grade}} mit {{points}} Punkten.",
+            "pw_project": "Betriebliche Projektarbeit: Dokumentation: Notee {{grade}} mit {{points}} Punkten.",
+            "pw_presentation": "Präsentation: Notee {{grade}} mit {{points}} Punkten.",
+            "overall": "Dein Gesamtergebnis ist: Notee {{grade}} mit {{points}} Punkten."
+        }
     },
     "settings": {
         "title": "Meine kleine App",

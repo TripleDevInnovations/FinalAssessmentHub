@@ -277,18 +277,6 @@ export default function AddResult() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label={t('add.projectWork.presentationLabel')}
-                  value={form.PW.presentation}
-                  onChange={(e) => handleChange('PW.presentation', e.target.value)}
-                  fullWidth
-                  required
-                  error={!!errors['PW.presentation']}
-                  helperText={errors['PW.presentation'] ?? t('add.helper.pointsRange')}
-                  inputProps={numericInputProps}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
                   label={t('add.projectWork.implementationLabel')}
                   value={form.PW.project}
                   onChange={(e) => handleChange('PW.project', e.target.value)}
@@ -296,6 +284,18 @@ export default function AddResult() {
                   required
                   error={!!errors['PW.project']}
                   helperText={errors['PW.project'] ?? t('add.helper.pointsRange')}
+                  inputProps={numericInputProps}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label={t('add.projectWork.presentationLabel')}
+                  value={form.PW.presentation}
+                  onChange={(e) => handleChange('PW.presentation', e.target.value)}
+                  fullWidth
+                  required
+                  error={!!errors['PW.presentation']}
+                  helperText={errors['PW.presentation'] ?? t('add.helper.pointsRange')}
                   inputProps={numericInputProps}
                 />
               </Grid>

@@ -2,7 +2,7 @@
     "topbar": {
         "title": "Final Assessment Hub",
         "logoAlt": "Logo",
-        "mainMenu": "Main menu tabs",
+        "mainMenu": "Main Menu Tabs",
         "add": "Add",
         "results": "Results",
         "settings": "Settings",
@@ -10,7 +10,7 @@
     },
     "add": {
         "title": "Enter Exam Results",
-        "subtitle": "Enter nickname and scores (0–100), then click Submit.",
+        "subtitle": "Enter nickname and scores (0–100) and click Submit.",
         "nicknameLabel": "Nickname",
         "submitButton": "Submit",
         "resetButton": "Reset",
@@ -43,7 +43,7 @@
         "helper": {
             "pointsRange": "0–100",
             "optional": "Optional",
-            "extraDisabled": "Disabled because another additional exam is active"
+            "extraDisabled": "Disabled because another extra exam is active"
         },
         "validation": {
             "nameRequired": "Name is required.",
@@ -58,13 +58,13 @@
         }
     },
     "results": {
-        "confirm_delete_entry": "Really delete entry?",
+        "confirm_delete_entry": "Really delete this entry?",
         "entry_deleted": "Entry deleted",
         "error_prefix": "Error",
         "entries_count": "Entries ({{count}})",
         "loading_entries": "Loading entries…",
         "no_entries_yet": "No entries yet.",
-        "select_entry_prompt": "Select an entry from the list to view its details.",
+        "select_entry_prompt": "Select an entry from the list to view details.",
         "open_menu_aria": "Open menu",
         "delete_aria": "delete",
         "exam_1": "Final Exam 1",
@@ -73,18 +73,29 @@
         "presentation": "Presentation",
         "documentation": "Documentation",
         "exam_2": "Final Exam 2",
+        "exam2_subtitle": "Written",
         "plan_software_product": "Planning a Software Product",
         "development_and_implementation": "Development and Implementation",
         "economics_and_social_studies": "Economics and Social Studies",
         "calculation_result": "Calculation Result",
-        "overall_result": "overall result",
+        "overall": "Overall Result",
         "grade": "Grade",
-        "calculate_button": "Calculate"
+        "calculate_button": "Calculate",
+        "calculated": "Calculated",
+        "speak": {
+            "ap1": "Final Exam Part 1: Grade {{grade}} with {{points}} points.",
+            "ap2_planning": "Final Exam Part 2: Planning a Software Product: Grade {{grade}} with {{points}} points.",
+            "ap2_development": "Development and Implementation: Grade {{grade}} with {{points}} points.",
+            "ap2_economy": "Economics and Social Studies: Grade {{grade}} with {{points}} points.",
+            "pw_project": "Company Project Work: Documentation: Grade {{grade}} with {{points}} points.",
+            "pw_presentation": "Presentation: Grade {{grade}} with {{points}} points.",
+            "overall": "Your overall result is: Grade {{grade}} with {{points}} points."
+        }
     },
     "settings": {
         "title": "My Little App",
-        "home_welcome": "Welcome to the Home Page",
-        "language": "Language.",
+        "home_welcome": "Welcome to the home page",
+        "language": "Language",
         "contact_text": "Contact us.",
         "settings_text": "Settings",
         "change_language": "Change Language",
@@ -93,6 +104,7 @@
         "dark_mode": "Dark",
         "light_mode": "Light",
         "toggle_theme_button": "Toggle Appearance",
-        "note_no_persist": "The selection is not saved; the default language is used when reloading."
-    }
+        "note_no_persist": "Your selection will not be saved; the default language will be used on reload."
+    },
+    "about": {}
 }
