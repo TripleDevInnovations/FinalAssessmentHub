@@ -104,7 +104,7 @@ export default function ListResultsPage(): JSX.Element {
 
     // Desktop Ansicht
     return (
-      <Grid container sx={{ height: 'calc(100vh - 200px)', flexWrap: 'nowrap' }}> {/* Hinzugefügte Änderung */}
+      <Grid container sx={{ height: 'calc(100vh - 150px)', flexWrap: 'nowrap' }}>
         <Grid
           item
           sx={{
@@ -122,7 +122,7 @@ export default function ListResultsPage(): JSX.Element {
             height: '100%',
             overflowY: 'auto',
             flex: '1 1 auto',
-            minWidth: 0, // wichtig, damit overflowY korrekt funktioniert
+            minWidth: 0, 
           }}
         >
           <EntryDetail
