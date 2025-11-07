@@ -88,4 +88,18 @@ class ExamCalculationService:
 
         components["Overall"] = {"points": overall_points, "grade": overall_grade}
 
+        fail_cond1 = any(p is not None and p < 30 for p in [
+            ap1_points, ap2_planning_points, ap2_development_points, ap2_economy_points, ap2_pw_overall_points
+        ])
+
+        fail_cond2 = sum(1 for p in [
+            ap2_planning_points, ap2_development_points, ap2_economy_points, ap2_pw_overall_points
+        ] if p is not None and p < 50) > 1
+
+        fail_cond3 = overall_points is not None and overall_points < 50
+
+        passed = not (fail_cond1 or fail_cond2 or fail_cond3)
+
+        components["Passed"] = passed
+
         return FinalExamResultOutput.from_result_dict(components)

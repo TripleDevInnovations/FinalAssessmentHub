@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { useTranslation } from 'react-i18next';
-import {Paper, Box, Typography, Grid, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert} from "@mui/material";
+import { Paper, Box, Typography, Grid, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { ExamPayload } from "../../types";
 
 // === Hilfsfunktionen und Konstanten ===
@@ -8,16 +8,16 @@ const onlyDigits = (s: string) => s.replace(`/\D+/g`, "");
 
 // Definieren des Formularzustands an einer zentralen Stelle für einfaches Zurücksetzen
 const initialFormState = {
-  Name: "",
-  AP1: "",
-  AP2: {
+  name: "",
+  ap1: "",
+  ap2: {
     planning: { main: "", extra: "" },
     development: { main: "", extra: "" },
     economy: { main: "", extra: "" },
-  },
-  PW: {
-    presentation: "",
-    project: "",
+    pw: {
+      presentation: "",
+      project: "",
+    },
   },
 };
 
@@ -43,7 +43,6 @@ interface ExamPartRowProps {
 
 const ExamPartRow: React.FC<ExamPartRowProps> = ({ title, mainField, extraField, errors, handleChange, isExtraDisabled }) => {
   const { t } = useTranslation();
-  
   return (
     <Grid item xs={12}>
       <Typography variant="h6" gutterBottom>{title}</Typography>
@@ -54,9 +53,8 @@ const ExamPartRow: React.FC<ExamPartRowProps> = ({ title, mainField, extraField,
             value={mainField.value}
             onChange={(e) => handleChange(mainField.key, e.target.value)}
             fullWidth
-            required
             error={!!errors[mainField.key]}
-            helperText={errors[mainField.key] ?? t('add.helper.pointsRange')}
+            helperText={errors[mainField.key] ?? t('add.helper.optional')}
             inputProps={numericInputProps}
           />
         </Grid>
@@ -87,16 +85,16 @@ export default function AddResult() {
   const [snackbar, setSnackbar] = useState({ open: false, severity: "success" as const, message: "" });
 
   const extrasDisabled = useMemo(() => {
-    const filledExtras = [form.AP2.planning.extra, form.AP2.development.extra, form.AP2.economy.extra].filter(Boolean);
+    const filledExtras = [form.ap2.planning.extra, form.ap2.development.extra, form.ap2.economy.extra].filter(Boolean);
     return {
-      planning: filledExtras.length > 0 && !form.AP2.planning.extra,
-      development: filledExtras.length > 0 && !form.AP2.development.extra,
-      economy: filledExtras.length > 0 && !form.AP2.economy.extra,
+      planning: filledExtras.length > 0 && !form.ap2.planning.extra,
+      development: filledExtras.length > 0 && !form.ap2.development.extra,
+      economy: filledExtras.length > 0 && !form.ap2.economy.extra,
     };
-  }, [form.AP2]);
+  }, [form.ap2]);
 
   const handleChange = useCallback((key: string, value: string) => {
-    const isNumeric = !key.includes("Name");
+    const isNumeric = !key.includes("name");
     let processedValue = isNumeric ? onlyDigits(value).slice(0, 3) : value;
 
     setForm((prev) => {
@@ -110,11 +108,10 @@ export default function AddResult() {
 
       // Exklusivität für Zusatzprüfungen
       if (key.includes('extra') && processedValue.trim() !== "") {
-        if (key !== 'AP2.planning.extra') next.AP2.planning.extra = "";
-        if (key !== 'AP2.development.extra') next.AP2.development.extra = "";
-        if (key !== 'AP2.economy.extra') next.AP2.economy.extra = "";
+        if (key !== 'ap2.planning.extra') next.ap2.planning.extra = "";
+        if (key !== 'ap2.development.extra') next.ap2.development.extra = "";
+        if (key !== 'ap2.economy.extra') next.ap2.economy.extra = "";
       }
-
       return next;
     });
     setErrors((prev) => ({ ...prev, [key]: undefined }));
@@ -122,52 +119,59 @@ export default function AddResult() {
 
   const validate = () => {
     const newErrors: FormErrors = {};
-    if (!form.Name.trim()) newErrors.Name = t('add.validation.nameRequired');
-    
-    const fieldValidations = {
-      'AP1': form.AP1,
-      'AP2.planning.main': form.AP2.planning.main,
-      'AP2.development.main': form.AP2.development.main,
-      'AP2.economy.main': form.AP2.economy.main,
-      'PW.presentation': form.PW.presentation,
-      'PW.project': form.PW.project,
+    if (!form.name.trim()) newErrors.name = t('add.validation.nameRequired');
+
+    const fieldsToValidate = {
+      'ap1': form.ap1,
+      'ap2.planning.main': form.ap2.planning.main,
+      'ap2.planning.extra': form.ap2.planning.extra,
+      'ap2.development.main': form.ap2.development.main,
+      'ap2.development.extra': form.ap2.development.extra,
+      'ap2.economy.main': form.ap2.economy.main,
+      'ap2.economy.extra': form.ap2.economy.extra,
+      'ap2.pw.presentation': form.ap2.pw.presentation,
+      'ap2.pw.project': form.ap2.pw.project,
     };
 
-    Object.entries(fieldValidations).forEach(([key, value]) => {
-      const v = value.trim();
-      if (v === "") newErrors[key] = t('add.validation.required');
-      else if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
-        newErrors[key] = t('add.validation.valueBetween');
-      }
-    });
+    Object.entries(fieldsToValidate).forEach(([key, value]) => {
+      const v = String(value).trim();
+      if (v === "") return; // Leere Felder sind gültig
 
-    const optionalFields = {
-      'AP2.planning.extra': form.AP2.planning.extra,
-      'AP2.development.extra': form.AP2.development.extra,
-      'AP2.economy.extra': form.AP2.economy.extra,
-    }
-    Object.entries(optionalFields).forEach(([key, value]) => {
-      const v = value.trim();
-      if (v === "") return;
       if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
         newErrors[key] = t('add.validation.valueBetween');
       }
     });
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const buildPayload = (): ExamPayload => ({
-    Name: form.Name.trim(),
-    AP1: Number(form.AP1),
-    AP2: {
-      planning: { main: Number(form.AP2.planning.main), extra: form.AP2.planning.extra.trim() === "" ? null : Number(form.AP2.planning.extra) },
-      development: { main: Number(form.AP2.development.main), extra: form.AP2.development.extra.trim() === "" ? null : Number(form.AP2.development.extra) },
-      economy: { main: Number(form.AP2.economy.main), extra: form.AP2.economy.extra.trim() === "" ? null : Number(form.AP2.economy.extra) }
-    },
-    PW: { presentation: Number(form.PW.presentation), project: Number(form.PW.project) }
-  });
+  const buildPayload = (): ExamPayload => {
+    const toNumberOrUndefined = (val: string) => val.trim() === "" ? undefined : Number(val);
+
+    return {
+      name: form.name.trim(),
+      ap1: toNumberOrUndefined(form.ap1),
+      ap2: {
+        planning: {
+          main: toNumberOrUndefined(form.ap2.planning.main),
+          extra: toNumberOrUndefined(form.ap2.planning.extra)
+        },
+        development: {
+          main: toNumberOrUndefined(form.ap2.development.main),
+          extra: toNumberOrUndefined(form.ap2.development.extra)
+        },
+        economy: {
+          main: toNumberOrUndefined(form.ap2.economy.main),
+          extra: toNumberOrUndefined(form.ap2.economy.extra)
+        },
+        pw: {
+          presentation: toNumberOrUndefined(form.ap2.pw.presentation),
+          project: toNumberOrUndefined(form.ap2.pw.project)
+        }
+      }
+    };
+  };
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -175,7 +179,6 @@ export default function AddResult() {
       setSnackbar({ open: true, severity: "error", message: t('add.snackbar.validationError') });
       return;
     }
-    
     setLoading(true);
     try {
       const resp = await fetch("http://127.0.0.1:8000/exam/save", {
@@ -197,7 +200,7 @@ export default function AddResult() {
       setLoading(false);
     }
   };
-  
+
   const resetForm = () => {
     setForm(initialFormState);
     setErrors({});
@@ -211,99 +214,84 @@ export default function AddResult() {
         <Typography variant="h5" component="h1" gutterBottom>{t('add.title')}</Typography>
         <Typography variant="body2" color="text.secondary">{t('add.subtitle')}</Typography>
       </Box>
-
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
               label={t('add.nicknameLabel')}
-              value={form.Name}
-              onChange={(e) => handleChange('Name', e.target.value)}
+              value={form.name}
+              onChange={(e) => handleChange('name', e.target.value)}
               fullWidth
               required
-              error={!!errors.Name}
-              helperText={errors.Name}
+              error={!!errors.name}
+              helperText={errors.name}
               autoComplete="name"
             />
           </Grid>
-
           <Divider sx={{ width: "100%", my: 2 }} />
-
           <ExamPartRow
             title={t('add.ap1.title')}
-            mainField={{ key: "AP1", label: t('add.ap1.mainLabel'), value: form.AP1 }}
+            mainField={{ key: "ap1", label: t('add.ap1.mainLabel'), value: form.ap1 }}
             errors={errors}
             handleChange={handleChange}
             isExtraDisabled={false}
           />
-          
           <Divider sx={{ width: "100%", my: 2 }} />
-          
           <ExamPartRow
             title={t('add.ap2.planning.title')}
-            mainField={{ key: "AP2.planning.main", label: t('add.ap2.planning.mainLabel'), value: form.AP2.planning.main }}
-            extraField={{ key: "AP2.planning.extra", label: t('add.ap2.planning.extraLabel'), value: form.AP2.planning.extra }}
+            mainField={{ key: "ap2.planning.main", label: t('add.ap2.planning.mainLabel'), value: form.ap2.planning.main }}
+            extraField={{ key: "ap2.planning.extra", label: t('add.ap2.planning.extraLabel'), value: form.ap2.planning.extra }}
             errors={errors}
             handleChange={handleChange}
             isExtraDisabled={extrasDisabled.planning}
           />
-
           <Divider sx={{ width: "100%", my: 2 }} />
-          
           <ExamPartRow
             title={t('add.ap2.development.title')}
-            mainField={{ key: "AP2.development.main", label: t('add.ap2.development.mainLabel'), value: form.AP2.development.main }}
-            extraField={{ key: "AP2.development.extra", label: t('add.ap2.development.extraLabel'), value: form.AP2.development.extra }}
+            mainField={{ key: "ap2.development.main", label: t('add.ap2.development.mainLabel'), value: form.ap2.development.main }}
+            extraField={{ key: "ap2.development.extra", label: t('add.ap2.development.extraLabel'), value: form.ap2.development.extra }}
             errors={errors}
             handleChange={handleChange}
             isExtraDisabled={extrasDisabled.development}
           />
-          
           <Divider sx={{ width: "100%", my: 2 }} />
-          
           <ExamPartRow
             title={t('add.ap2.economy.title')}
-            mainField={{ key: "AP2.economy.main", label: t('add.ap2.economy.mainLabel'), value: form.AP2.economy.main }}
-            extraField={{ key: "AP2.economy.extra", label: t('add.ap2.economy.extraLabel'), value: form.AP2.economy.extra }}
+            mainField={{ key: "ap2.economy.main", label: t('add.ap2.economy.mainLabel'), value: form.ap2.economy.main }}
+            extraField={{ key: "ap2.economy.extra", label: t('add.ap2.economy.extraLabel'), value: form.ap2.economy.extra }}
             errors={errors}
             handleChange={handleChange}
             isExtraDisabled={extrasDisabled.economy}
           />
-
           <Divider sx={{ width: "100%", my: 2 }} />
-
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>{t('add.projectWork.title')}</Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label={t('add.projectWork.implementationLabel')}
-                  value={form.PW.project}
-                  onChange={(e) => handleChange('PW.project', e.target.value)}
+                  value={form.ap2.pw.project}
+                  onChange={(e) => handleChange('ap2.pw.project', e.target.value)}
                   fullWidth
-                  required
-                  error={!!errors['PW.project']}
-                  helperText={errors['PW.project'] ?? t('add.helper.pointsRange')}
+                  error={!!errors['ap2.pw.project']}
+                  helperText={errors['ap2.pw.project'] ?? t('add.helper.optional')}
                   inputProps={numericInputProps}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label={t('add.projectWork.presentationLabel')}
-                  value={form.PW.presentation}
-                  onChange={(e) => handleChange('PW.presentation', e.target.value)}
+                  value={form.ap2.pw.presentation}
+                  onChange={(e) => handleChange('ap2.pw.presentation', e.target.value)}
                   fullWidth
-                  required
-                  error={!!errors['PW.presentation']}
-                  helperText={errors['PW.presentation'] ?? t('add.helper.pointsRange')}
+                  error={!!errors['ap2.pw.presentation']}
+                  helperText={errors['ap2.pw.presentation'] ?? t('add.helper.optional')}
                   inputProps={numericInputProps}
                 />
               </Grid>
             </Grid>
           </Grid>
-          
           <Divider sx={{ width: "100%", my: 2 }} />
-
           <Grid item xs={12}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Box sx={{ position: "relative" }}>
@@ -311,7 +299,10 @@ export default function AddResult() {
                   {t('add.submitButton')}
                 </Button>
                 {loading && (
-                  <CircularProgress size={24} sx={{ color: "primary.main", position: "absolute", top: "50%", left: "50%", marginTop: "-12px", marginLeft: "-12px" }} />
+                  <CircularProgress
+                    size={24}
+                    sx={{ color: "primary.main", position: "absolute", top: "50%", left: "50%", marginTop: "-12px", marginLeft: "-12px" }}
+                  />
                 )}
               </Box>
               <Button variant="outlined" color="secondary" onClick={resetForm} disabled={loading}>
@@ -321,7 +312,6 @@ export default function AddResult() {
           </Grid>
         </Grid>
       </Box>
-
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}

@@ -33,11 +33,12 @@ class FinalExamResultOutput(BaseModel):
     AP1: Optional[ComponentResult] = Field(None, description="AP1 result")
     AP2: Optional[AP2Output] = Field(None, description="AP2 results")
     Overall: Optional[ComponentResult] = Field(None, description="Overall weighted result")
+    Passed: Optional[bool] = Field(None, description="Shows if you passed the exam")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     @classmethod
-    def from_result_dict(cls, result_dict: dict,) -> "FinalExamResultOutput":
+    def from_result_dict(cls, result_dict: dict) -> "FinalExamResultOutput":
         def to_component(key: str):
             v = result_dict.get(key)
             if v is None:
@@ -61,5 +62,6 @@ class FinalExamResultOutput(BaseModel):
         return cls(
             AP1=to_component("ap1"),
             AP2=ap2,
-            Overall=to_component("Overall")
+            Overall=to_component("Overall"),
+            Passed=result_dict.get("Passed")
         )

@@ -17,13 +17,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CalculateIcon from "@mui/icons-material/Calculate";
 // @ts-ignore
 import { useTranslation, TFunction } from "react-i18next";
-import { Entry, CalculationResult } from "../types";
+import { Entry, CalculationResult, GradeAndPoints } from "../types";
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis'; // Passe den Pfad an
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
-// --- Sub-Komponenten für bessere Lesbarkeit und Wiederverwendbarkeit ---
 
 interface SectionHeaderProps {
   title: string;
@@ -84,18 +83,7 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
       <Typography variant="h4" fontWeight="bold" noWrap>
         {entry.name}
       </Typography>
-      {calculation && (
-        <Chip
-          label={`${t("results.overall")}: ${calculation.overall.grade} (${calculation.overall.points
-            } ${t("results.points")})`}
-          color="primary"
-          sx={{
-            height: "auto",
-            fontSize: "1.1rem",
-            fontWeight: "bold",
-          }}
-        />
-      )}
+      {/* Das Gesamtergebnis-Chip wurde von hier entfernt */}
     </Stack>
     <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
       <Button
@@ -108,7 +96,7 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
           )
         }
         onClick={onCalculate}
-        disabled={isCalculating}
+        disabled={isCalculating || !entry.ap1 || !entry.ap2?.planning?.main || !entry.ap2?.development?.main || !entry.ap2?.economy?.main || !entry.ap2?.pw?.presentation || !entry.ap2?.pw?.project}
       >
         {t("results.calculate_button")}
       </Button>
@@ -135,9 +123,9 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
 
 interface ExamPartCardProps {
   label: string;
-  mainValue: number | string;
+  mainValue?: number | string | null;
   extraValue?: number | string | null;
-  calculation?: { grade: number; points?: number };
+  calculation?: GradeAndPoints;
   t: TFunction;
 }
 
@@ -154,17 +142,17 @@ const ExamPartCard: React.FC<ExamPartCardProps> = ({
     </Typography>
     <Stack direction="column" spacing={1} alignItems="center" flexWrap="wrap">
       <Typography variant="body1" fontWeight="medium">
-        {mainValue}
-        {extraValue && ` / ${extraValue} (MEPR)`}
+        {mainValue ?? '-'}
+        {extraValue && ` / ${extraValue ?? '-'} (MEPR)`}
       </Typography>
-      {calculation && (
+      {calculation && calculation.grade !== null && (
         <Stack direction="row" spacing={1} alignItems="center">
-          <Tooltip title={t("results.grade") ?? "Berechneter Wert"}>
-            <Chip size="small" label={calculation.grade.toString()} />
+          <Tooltip title={t('results.grade') ?? 'Berechneter Wert'}>
+            <Chip size="small" label={calculation?.grade?.toString()} />
           </Tooltip>
-          {extraValue && calculation.points !== undefined && (
+          {extraValue && calculation.points !== null && (
             <Typography variant="caption" color="text.secondary">
-              {calculation.points} {t("results.points") ?? "P"}
+              {calculation.points} {t('results.points') ?? 'P'}
             </Typography>
           )}
         </Stack>
@@ -173,7 +161,6 @@ const ExamPartCard: React.FC<ExamPartCardProps> = ({
   </Grid>
 );
 
-// --- Hauptkomponente ---
 
 interface EntryDetailProps {
   entry: Entry | null;
@@ -196,37 +183,14 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
 
   const generateSpokenText = (result: CalculationResult) => {
     const parts = [
-      t('results.speak.ap1', {
-        grade: result.AP1.grade,
-        points: result.AP1.points
-      }),
-      t('results.speak.ap2_planning', {
-        grade: result.AP2.planning.grade,
-        points: result.AP2.planning.points
-      }),
-      t('results.speak.ap2_development', {
-        grade: result.AP2.development.grade,
-        points: result.AP2.development.points
-      }),
-      t('results.speak.ap2_economy', {
-        grade: result.AP2.economy.grade,
-        points: result.AP2.economy.points
-      }),
-      t('results.speak.pw_project', {
-        grade: result.PW.project.grade,
-        points: result.PW.project.points
-      }),
-      t('results.speak.pw_presentation', {
-        grade: result.PW.presentation.grade,
-        points: result.PW.presentation.points
-      }),
-      // Das Gesamtergebnis kommt zum Schluss
-      t('results.speak.overall', {
-        grade: result.overall.grade,
-        points: result.overall.points
-      })
+      t('results.speak.ap1', { grade: result.AP1.grade, points: result.AP1.points }),
+      t('results.speak.ap2_planning', { grade: result.AP2.planning.grade, points: result.AP2.planning.points }),
+      t('results.speak.ap2_development', { grade: result.AP2.development.grade, points: result.AP2.development.points }),
+      t('results.speak.ap2_economy', { grade: result.AP2.economy.grade, points: result.AP2.economy.points }),
+      t('results.speak.pw_project', { grade: result.AP2.pw.project.grade, points: result.AP2.pw.project.points }),
+      t('results.speak.pw_presentation', { grade: result.AP2.pw.presentation.grade, points: result.AP2.pw.presentation.points }),
+      t('results.speak.overall', { grade: result.Overall.grade, points: result.Overall.points })
     ];
-
     // Fügt die Sätze mit einer kurzen Pause (Punkt und Leerzeichen) zusammen
     return parts.join('. ');
   };
@@ -238,18 +202,13 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
       const res = await fetch(`${API_BASE_URL}/exam/calculate/${entryId}`);
       if (!res.ok) {
         throw new Error(
-          `${t(
-            "results.calculation_failed",
-            "Berechnung fehlgeschlagen"
-          )}: ${res.statusText}`
+          `${t("results.calculation_failed", "Berechnung fehlgeschlagen")}: ${res.statusText}`
         );
       }
       const json = await res.json();
       setCalculation(json.data as CalculationResult);
     } catch (err: any) {
-      setCalcError(
-        err?.message ?? t("results.unknown_error", "Unbekannter Fehler")
-      );
+      setCalcError(err?.message ?? t("results.unknown_error", "Unbekannter Fehler"));
     } finally {
       setIsCalculating(false);
     }
@@ -284,30 +243,26 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
         t={t}
       />
       <Divider />
+
+      {calculation && (
+        <Alert severity={calculation.Passed ? "success" : "error"}>
+          {`${calculation.Passed ? t("results.passed") : t("results.failed")} | ${t("results.overall")}: ${calculation.Overall.grade} (${calculation.Overall.points} ${t("results.points")})`}
+        </Alert>
+      )}
+
       <Grid container spacing={4}>
         {/* AP1 */}
         <Grid item xs={12} sm={6} md={4}>
           <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
             <SectionHeader title={t("results.exam_1") ?? "Abschlussprüfung — Teil 1"} />
-            <Typography variant="subtitle2" color="text.secondary">
-              {t("results.points") ?? "Eingetragen"}
-            </Typography>
-            <Typography variant="body1" fontWeight="medium" gutterBottom>
-              {entry.ap1}
-            </Typography>
-            {calculation?.AP1 && (
-              <>
-                <Typography variant="subtitle2" color="text.secondary">
-                  {t("results.grade")}
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {calculation.AP1.grade}
-                </Typography>
-              </>
-            )}
+              <ExamPartCard
+                label={t("")}
+                mainValue={entry.ap1}
+                calculation={calculation?.AP1}
+                t={t}
+              />
           </Card>
         </Grid>
-
         {/* AP2 & PW */}
         <Grid item xs={12} sm={6} md={8}>
           <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
@@ -346,14 +301,14 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
             <Grid container spacing={2}>
               <ExamPartCard
                 label={t("results.documentation") ?? "Dokumentation"}
-                mainValue={entry.pw.project}
-                calculation={calculation?.PW?.project}
+                mainValue={entry?.ap2?.pw?.project}
+                calculation={calculation?.AP2?.pw?.project}
                 t={t}
               />
               <ExamPartCard
                 label={t("results.presentation") ?? "Präsentation"}
-                mainValue={entry.pw.presentation}
-                calculation={calculation?.PW?.presentation}
+                mainValue={entry?.ap2?.pw?.presentation}
+                calculation={calculation?.AP2?.pw?.presentation}
                 t={t}
               />
             </Grid>

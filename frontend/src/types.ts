@@ -1,45 +1,37 @@
 
 export interface AP2Category {
-  main: number;
-  extra: number;
+  main?: number;
+  extra?: number;
+}
+
+export interface PW {
+  project?: number;
+  presentation?: number;
 }
 
 export interface AP2 {
   planning: AP2Category;
   development: AP2Category;
   economy: AP2Category;
-}
-
-export interface PW {
-  presentation: number;
-  project: number;
+  pw: PW
 }
 
 export interface Entry {
   id: string;
   name: string;
-  ap1: number;
+  ap1?: number;
   ap2: AP2;
-  pw: PW;
 }
 
 export interface ExamPayload {
-  Name: string;
-  AP1: number;
-  AP2: {
-    planning: { main: number; extra: number | null };
-    development: { main: number; extra: number | null };
-    economy: { main: number; extra: number | null };
-  };
-  PW: {
-    presentation: number;
-    project: number;
-  };
+  name: string;
+  ap1?: number;
+  ap2: AP2;
 }
 
-interface GradeAndPoints {
-  points: number;
-  grade: number;
+export interface GradeAndPoints {
+  points?: number;
+  grade?: number;
 }
 
 export interface CalculationResult {
@@ -48,11 +40,12 @@ export interface CalculationResult {
     planning: GradeAndPoints;
     development: GradeAndPoints;
     economy: GradeAndPoints;
-  };
-  PW: {
-    project: GradeAndPoints;
-    presentation: GradeAndPoints;
-  };
-  overall: GradeAndPoints;
+    pw: {
+      project: GradeAndPoints;
+      presentation: GradeAndPoints;
+      overall: GradeAndPoints;
+    };
+  }
+  Overall: GradeAndPoints;
+  Passed: boolean
 }
-
