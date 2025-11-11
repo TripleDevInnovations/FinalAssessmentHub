@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import {
   Typography,
-  Grid,
   CircularProgress,
   Snackbar,
   Alert,
@@ -13,21 +12,31 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  IconButton,
-
+  IconButton
 } from "@mui/material";
+import type { AlertColor } from '@mui/material';
+// @ts-ignore
+import Grid from '@mui/material/GridLegacy';
 import { useTranslation } from "react-i18next";
 import { useEntries } from "../../hooks/useEntries";
 import EntryListItem from "../../components/EntryListItem";
 import EntryDetail from "../../components/EntryDetail";
 import CloseIcon from '@mui/icons-material/Close';
-import AddResult from "../addResult"; 
-import { Entry } from "../../types";
+import AddResult from "../addResult";
 
 export default function ListResultsPage(): JSX.Element {
   const { t } = useTranslation();
-  const { entries, loading, error, selectedId, setSelectedId, refetchEntries , deleteEntry } = useEntries();
-  const [snack, setSnack] = useState({ open: false, msg: "", severity: "success" as const });
+  const { entries, loading, error, selectedId, setSelectedId, refetchEntries, deleteEntry } = useEntries();
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    msg: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    msg: '',
+    severity: 'success'
+  });
+
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -42,7 +51,7 @@ export default function ListResultsPage(): JSX.Element {
     setSelectedId(id);
     setEditModalOpen(true);
   };
-  
+
   const handleCloseEditModal = () => {
     setEditModalOpen(false);
   };
@@ -146,7 +155,7 @@ export default function ListResultsPage(): JSX.Element {
             height: '100%',
             overflowY: 'auto',
             flex: '1 1 auto',
-            minWidth: 0, 
+            minWidth: 0,
           }}
         >
           <EntryDetail

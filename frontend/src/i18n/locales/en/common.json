@@ -2,7 +2,7 @@
     "topbar": {
         "title": "Final Assessment Hub",
         "logoAlt": "Logo",
-        "mainMenu": "Main menu tabs",
+        "mainMenu": "Main Menu Tabs",
         "add": "Add",
         "results": "Results",
         "settings": "Settings",
@@ -51,13 +51,15 @@
             "valueBetween": "Value must be between 0 and 100"
         },
         "snackbar": {
-            "validationError": "Please fix errors before submitting.",
+            "validationError": "Please fix the errors before submitting.",
             "saveSuccess": "Saved successfully.",
+            "updateSuccess": "Updated successfully.",
             "serverError": "Server error: {{error}}",
             "networkError": "Network error: {{error}}"
         },
         "edit": {
-            "title": "Edit Result"
+            "title": "Edit Result",
+            "subtitle": "Edit the exam results."
         }
     },
     "results": {
@@ -101,7 +103,7 @@
     },
     "settings": {
         "title": "My Little App",
-        "home_welcome": "Welcome to the home page",
+        "home_welcome": "Welcome to the Home Page",
         "language": "Language",
         "contact_text": "Contact us.",
         "settings_text": "Settings",
@@ -111,7 +113,7 @@
         "dark_mode": "Dark",
         "light_mode": "Light",
         "toggle_theme_button": "Toggle Appearance",
-        "note_no_persist": "Your selection is not saved; the default language will be used when reloading."
+        "note_no_persist": "The selection is not saved; the default language will be used on reload."
     },
     "about": {}
 }

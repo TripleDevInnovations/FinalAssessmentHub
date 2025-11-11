@@ -1,15 +1,22 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "TripleDevInnovations.FinalAssessmentHub",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "FinalAssessmentHub",
   "directories": {
     "output": "release/${version}"
   },
   "files": [
     "dist",
     "dist-electron"
+  ],
+  "extraResources": [
+    {
+      "from": "dist_backend/",
+      "to": "backend",
+      "filter": ["**/*"]
+    }
   ],
   "mac": {
     "target": [

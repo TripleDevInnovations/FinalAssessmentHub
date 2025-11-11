@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from 'react-i18next';
-import { Paper, Box, Typography, Grid, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert } from "@mui/material";
+import { Paper, Box, Typography, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert, AlertProps } from "@mui/material";
+// @ts-ignore
+import Grid from '@mui/material/GridLegacy';
 import { ExamPayload, Entry } from "../../types";
 
 // === Hilfsfunktionen und Konstanten ===
@@ -110,13 +112,22 @@ const convertEntryToFormState = (entry: Entry): FormState => {
   };
 };
 
-export default function AddResult({ entryToEdit, onSaveSuccess, onCancel }: AddResultProps) {
+interface SnackbarState {
+  open: boolean;
+  message: string;
+  severity: AlertProps['severity'];
+}
+
+export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps) {
   const { t } = useTranslation();
   const [form, setForm] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, severity: "success" as const, message: "" });
-  
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    severity: "success",
+    message: ""
+  });
   const isEditMode = !!entryToEdit;
 
   // Formular mit Daten füllen, wenn ein Eintrag zum Bearbeiten übergeben wird
