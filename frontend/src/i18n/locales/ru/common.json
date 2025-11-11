@@ -1,0 +1,117 @@
+{
+    "topbar": {
+        "title": "Центр Итоговой Аттестации",
+        "logoAlt": "Логотип",
+        "mainMenu": "Вкладки главного меню",
+        "add": "Добавить",
+        "results": "Результаты",
+        "settings": "Настройки",
+        "info": "Информация"
+    },
+    "add": {
+        "title": "Ввод результатов экзамена",
+        "subtitle": "Введите никнейм и баллы (0–100), затем нажмите «Отправить».",
+        "nicknameLabel": "Никнейм",
+        "submitButton": "Отправить",
+        "resetButton": "Сбросить",
+        "ap1": {
+            "title": "Итоговый экзамен 1",
+            "mainLabel": "Часть 1 (Баллы)"
+        },
+        "ap2": {
+            "planning": {
+                "title": "Итоговый экзамен 2 — Планирование программного продукта",
+                "mainLabel": "Часть 2.1 (Баллы)",
+                "extraLabel": "Часть 2.1 (MEPR)"
+            },
+            "development": {
+                "title": "Итоговый экзамен 2 — Разработка и реализация алгоритмов",
+                "mainLabel": "Часть 2.2 (Баллы)",
+                "extraLabel": "Часть 2.2 (MEPR)"
+            },
+            "economy": {
+                "title": "Итоговый экзамен 2 — Экономика и обществознание",
+                "mainLabel": "Часть 2.3 (Баллы)",
+                "extraLabel": "Часть 2.3 (MEPR)"
+            }
+        },
+        "projectWork": {
+            "title": "Проектная работа компании",
+            "presentationLabel": "Презентация",
+            "implementationLabel": "Планирование и реализация"
+        },
+        "helper": {
+            "pointsRange": "0–100",
+            "optional": "Необязательно",
+            "extraDisabled": "Отключено, так как активен другой дополнительный экзамен"
+        },
+        "validation": {
+            "nameRequired": "Имя обязательно.",
+            "required": "Обязательно",
+            "valueBetween": "Значение должно быть от 0 до 100"
+        },
+        "snackbar": {
+            "validationError": "Исправьте ошибки перед отправкой.",
+            "saveSuccess": "Успешно сохранено.",
+            "serverError": "Ошибка сервера: {{error}}",
+            "networkError": "Ошибка сети: {{error}}"
+        },
+        "edit": {
+            "title": "Редактировать результат"
+        }
+    },
+    "results": {
+        "confirm_delete_entry": "Действительно удалить запись?",
+        "entry_deleted": "Запись удалена",
+        "error_prefix": "Ошибка",
+        "entries_count": "Записей ({{count}})",
+        "loading_entries": "Загрузка записей…",
+        "no_entries_yet": "Пока нет записей.",
+        "select_entry_prompt": "Выберите запись из списка для просмотра деталей.",
+        "open_menu_aria": "Открыть меню",
+        "delete_aria": "Удалить",
+        "exam_1": "Итоговый экзамен 1",
+        "points": "Баллы",
+        "project_work": "Проектная работа компании",
+        "presentation": "Презентация",
+        "documentation": "Документация",
+        "exam_2": "Итоговый экзамен 2",
+        "exam2_subtitle": "Письменный",
+        "plan_software_product": "Планирование программного продукта",
+        "development_and_implementation": "Разработка и реализация",
+        "economics_and_social_studies": "Экономика и обществознание",
+        "calculation_result": "Результат расчета",
+        "overall": "Общий результат",
+        "grade": "Оценка",
+        "calculate_button": "Рассчитать",
+        "calculated": "Рассчитано",
+        "passed": "Сдано",
+        "failed": "Не сдано",
+        "project_work_overall": "Общий результат",
+        "speak": {
+            "ap1": "Итоговый экзамен, часть 1: оценка {{grade}} при {{points}} баллах.",
+            "ap2_planning": "Итоговый экзамен, часть 2: Планирование программного продукта: оценка {{grade}} при {{points}} баллах.",
+            "ap2_development": "Разработка и реализация: оценка {{grade}} при {{points}} баллах.",
+            "ap2_economy": "Экономика и обществознание: оценка {{grade}} при {{points}} баллах.",
+            "pw_project": "Проектная работа компании: документация: оценка {{grade}} при {{points}} баллах.",
+            "pw_presentation": "Презентация: оценка {{grade}} при {{points}} баллах.",
+            "speak.pw_overall": "Это приводит к следующему результату проектной работы компании: оценка {{grade}} при {{points}} баллах.",
+            "overall": "Ваш общий результат: оценка {{grade}} при {{points}} баллах."
+        }
+    },
+    "settings": {
+        "title": "Моё маленькое приложение",
+        "home_welcome": "Добро пожаловать на главную страницу",
+        "language": "Язык",
+        "contact_text": "Свяжитесь с нами.",
+        "settings_text": "Настройки",
+        "change_language": "Изменить язык",
+        "settings_change_language_note": "Выберите язык отображения (не сохраняется).",
+        "appearance": "Внешний вид",
+        "dark_mode": "Тёмная тема",
+        "light_mode": "Светлая тема",
+        "toggle_theme_button": "Переключить внешний вид",
+        "note_no_persist": "Ваш выбор не сохраняется; при перезагрузке будет использован язык по умолчанию."
+    },
+    "about": {}
+}

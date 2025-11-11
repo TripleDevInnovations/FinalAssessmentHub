@@ -1,0 +1,117 @@
+{
+    "topbar": {
+        "title": "مركز التقييم النهائي",
+        "logoAlt": "الشعار",
+        "mainMenu": "علامات تبويب القائمة الرئيسية",
+        "add": "إضافة",
+        "results": "النتائج",
+        "settings": "الإعدادات",
+        "info": "معلومات"
+    },
+    "add": {
+        "title": "إدخال نتائج الامتحان",
+        "subtitle": "أدخل الاسم المستعار والدرجات (0–100) ثم اضغط إرسال.",
+        "nicknameLabel": "الاسم المستعار",
+        "submitButton": "إرسال",
+        "resetButton": "إعادة تعيين",
+        "ap1": {
+            "title": "الامتحان النهائي 1",
+            "mainLabel": "الجزء 1 (النقاط)"
+        },
+        "ap2": {
+            "planning": {
+                "title": "الامتحان النهائي 2 - تخطيط منتج برمجي",
+                "mainLabel": "الجزء 2.1 (النقاط)",
+                "extraLabel": "الجزء 2.1 (MEPR)"
+            },
+            "development": {
+                "title": "الامتحان النهائي 2 - تطوير وتنفيذ الخوارزميات",
+                "mainLabel": "الجزء 2.2 (النقاط)",
+                "extraLabel": "الجزء 2.2 (MEPR)"
+            },
+            "economy": {
+                "title": "الامتحان النهائي 2 - الاقتصاد والدراسات الاجتماعية",
+                "mainLabel": "الجزء 2.3 (النقاط)",
+                "extraLabel": "الجزء 2.3 (MEPR)"
+            }
+        },
+        "projectWork": {
+            "title": "عمل مشروع الشركة",
+            "presentationLabel": "العرض التقديمي",
+            "implementationLabel": "التخطيط والتنفيذ"
+        },
+        "helper": {
+            "pointsRange": "0–100",
+            "optional": "اختياري",
+            "extraDisabled": "معطل لأن اختبارًا إضافيًا آخر نشط"
+        },
+        "validation": {
+            "nameRequired": "الاسم مطلوب.",
+            "required": "مطلوب",
+            "valueBetween": "يجب أن تكون القيمة بين 0 و 100"
+        },
+        "snackbar": {
+            "validationError": "يرجى تصحيح الأخطاء قبل الإرسال.",
+            "saveSuccess": "تم الحفظ بنجاح.",
+            "serverError": "خطأ في الخادم: {{error}}",
+            "networkError": "خطأ في الشبكة: {{error}}"
+        },
+        "edit": {
+            "title": "تعديل النتيجة"
+        }
+    },
+    "results": {
+        "confirm_delete_entry": "هل تريد حذف الإدخال حقًا؟",
+        "entry_deleted": "تم حذف الإدخال",
+        "error_prefix": "خطأ",
+        "entries_count": "الإدخالات ({{count}})",
+        "loading_entries": "جاري تحميل الإدخالات…",
+        "no_entries_yet": "لا توجد إدخالات بعد.",
+        "select_entry_prompt": "اختر إدخالًا من القائمة لعرض التفاصيل.",
+        "open_menu_aria": "فتح القائمة",
+        "delete_aria": "حذف",
+        "exam_1": "الامتحان النهائي 1",
+        "points": "النقاط",
+        "project_work": "عمل مشروع الشركة",
+        "presentation": "العرض التقديمي",
+        "documentation": "التوثيق",
+        "exam_2": "الامتحان النهائي 2",
+        "exam2_subtitle": "كتابي",
+        "plan_software_product": "تخطيط منتج برمجي",
+        "development_and_implementation": "التطوير والتنفيذ",
+        "economics_and_social_studies": "الاقتصاد والدراسات الاجتماعية",
+        "calculation_result": "نتيجة الحساب",
+        "overall": "النتيجة الإجمالية",
+        "grade": "الدرجة",
+        "calculate_button": "احسب",
+        "calculated": "تم الحساب",
+        "passed": "ناجح",
+        "failed": "راسب",
+        "project_work_overall": "الإجمالي",
+        "speak": {
+            "ap1": "الامتحان النهائي الجزء 1: الدرجة {{grade}} مع {{points}} نقطة.",
+            "ap2_planning": "الامتحان النهائي الجزء 2: تخطيط منتج برمجي: الدرجة {{grade}} مع {{points}} نقطة.",
+            "ap2_development": "التطوير والتنفيذ: الدرجة {{grade}} مع {{points}} نقطة.",
+            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: الدرجة {{grade}} مع {{points}} نقطة.",
+            "pw_project": "عمل مشروع الشركة: التوثيق: الدرجة {{grade}} مع {{points}} نقطة.",
+            "pw_presentation": "العرض التقديمي: الدرجة {{grade}} مع {{points}} نقطة.",
+            "speak.pw_overall": "ينتج عن ذلك النتيجة التالية لعمل مشروع الشركة: الدرجة {{grade}} مع {{points}} نقطة.",
+            "overall": "النتيجة الإجمالية الخاصة بك هي: الدرجة {{grade}} مع {{points}} نقطة."
+        }
+    },
+    "settings": {
+        "title": "تطبيقي الصغير",
+        "home_welcome": "مرحبًا بك في الصفحة الرئيسية",
+        "language": "اللغة",
+        "contact_text": "تواصل معنا.",
+        "settings_text": "الإعدادات",
+        "change_language": "تغيير اللغة",
+        "settings_change_language_note": "اختر لغة العرض (لن يتم حفظها).",
+        "appearance": "المظهر",
+        "dark_mode": "غامق",
+        "light_mode": "فاتح",
+        "toggle_theme_button": "تبديل المظهر",
+        "note_no_persist": "لن يتم حفظ اختيارك؛ سيتم استخدام اللغة الافتراضية عند إعادة التحميل."
+    },
+    "about": {}
+}

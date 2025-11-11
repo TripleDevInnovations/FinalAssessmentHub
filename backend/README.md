@@ -34,11 +34,11 @@ Activate it:
 
 - **macOS/Linux:**
   ```bash
-  source .venv/bin/activate
+  source backend/.venv/bin/activate
   ```
 - **Windows (PowerShell):**
   ```powershell
-  .\.venv\Scripts\Activate.ps1
+  backend\.venv\Scripts\Activate.ps1
   ```
 
 ---
@@ -46,7 +46,7 @@ Activate it:
 ### 2. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 > If `requirements.txt` is missing, install manually:

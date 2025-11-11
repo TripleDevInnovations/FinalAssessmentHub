@@ -11,15 +11,15 @@ client = TestClient(app)
 VALID_PAYLOAD = {
     "Name": "test name",
     "AP1": 85,
-    "ap2": {
+    "AP2": {
         "planning": {"main": 90},
         "development": {"main": 88, "extra": 92},
-        "economy": {"main": 78}
+        "economy": {"main": 78},
+        "pw": {
+            "project": 98,
+            "presentation": 95
+        }
     },
-    "ml": {
-        "ML1": 95,
-        "ML2": 98
-    }
 }
 
 MOCK_ENTRY = {"id": "some_test_id", **VALID_PAYLOAD}
@@ -31,7 +31,7 @@ from unittest.mock import patch, MagicMock
 def test_get_all_results(mock_file_service):
     mock_file_service.load_all.return_value = []
 
-    response = client.get("/exam/all")
+    response = client.get("/exam/list")
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)

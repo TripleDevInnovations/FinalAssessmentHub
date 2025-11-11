@@ -10,24 +10,26 @@ class AP2Part(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+
+class PW(BaseModel):
+    project: Optional[Score]      = Field(None, description="Planning and Implementing a Software Project")
+    presentation: Optional[Score] = Field(None, description="Presentation and Technical Discussion")
+
+    model_config = ConfigDict(extra="forbid")
+
+
 class AP2(BaseModel):
     planning: Optional[AP2Part] = Field(None, description="Planning a Software Product")
     development: Optional[AP2Part] = Field(None, description="Development and Implementation of Algorithms")
     economy: Optional[AP2Part] = Field(None, description="Economics and Social Studies")
-
-    model_config = ConfigDict(extra="forbid")
-
-class ML(BaseModel):
-    presentation: Optional[Score] = Field(None, alias="ML1", description="Presentation and Technical Discussion")
-    project: Optional[Score]      = Field(None, alias="ML2", description="Planning and Implementing a Software Project")
+    pw: Optional[PW]   = Field(None, description="Company Project Work")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
 
 class FinalExamResultInput(BaseModel):
     name: Optional[str] = Field(None, alias="Name")
     ap1: Optional[Score] = Field(None, alias="AP1", description="Setting up an IT-supported Workplace")
-
-    ap2: Optional[AP2] = Field(None, description="Part 2 of the Final Exam")
-    ml: Optional[ML]   = Field(None, description="Company Project Work")
+    ap2: Optional[AP2] = Field(None, alias="AP2", description="Part 2 of the Final Exam")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)

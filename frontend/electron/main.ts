@@ -1,9 +1,7 @@
-import { app, BrowserWindow } from 'electron'
-import { createRequire } from 'node:module'
+import { app, BrowserWindow, nativeImage  } from 'electron'
 import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import * as path from 'path';
 
-const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
@@ -27,11 +25,19 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 let win: BrowserWindow | null
 
 function createWindow() {
+  const iconPath = path.join(__dirname, '..','src',  'assets', 'logo_white.png');
+  const icon = nativeImage.createFromPath(iconPath);
+
   win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    width: 1200,
+    height: 800,
+    icon,
+    resizable: true,
+    fullscreenable: true,
+    maximizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
-    },
+    }
   })
 
   // Test active push message to Renderer-process.
