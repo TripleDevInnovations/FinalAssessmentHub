@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from 'react-i18next';
 import { Paper, Box, Typography, Grid, TextField, Divider, Stack, Button, CircularProgress, Snackbar, Alert } from "@mui/material";
-import { ExamPayload } from "../../types";
+import { ExamPayload, Entry } from "../../types";
 
 // === Hilfsfunktionen und Konstanten ===
 const onlyDigits = (s: string) => s.replace(`/\D+/g`, "");
@@ -77,12 +77,57 @@ const ExamPartRow: React.FC<ExamPartRowProps> = ({ title, mainField, extraField,
   );
 };
 
-export default function AddResult() {
+interface AddResultProps {
+  entryToEdit?: Entry | null;
+  onSaveSuccess?: () => void;
+  onCancel?: () => void;
+}
+
+// Konvertierungsfunktion, um ein Entry-Objekt in den Formularzustand zu überführen
+const convertEntryToFormState = (entry: Entry): FormState => {
+  const toString = (val: number | null | undefined) => (val != null ? String(val) : "");
+  return {
+    name: entry.name || "",
+    ap1: toString(entry.ap1),
+    ap2: {
+      planning: {
+        main: toString(entry.ap2?.planning?.main),
+        extra: toString(entry.ap2?.planning?.extra),
+      },
+      development: {
+        main: toString(entry.ap2?.development?.main),
+        extra: toString(entry.ap2?.development?.extra),
+      },
+      economy: {
+        main: toString(entry.ap2?.economy?.main),
+        extra: toString(entry.ap2?.economy?.extra),
+      },
+      pw: {
+        presentation: toString(entry.ap2?.pw?.presentation),
+        project: toString(entry.ap2?.pw?.project),
+      },
+    },
+  };
+};
+
+export default function AddResult({ entryToEdit, onSaveSuccess, onCancel }: AddResultProps) {
   const { t } = useTranslation();
   const [form, setForm] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, severity: "success" as const, message: "" });
+  
+  const isEditMode = !!entryToEdit;
+
+  // Formular mit Daten füllen, wenn ein Eintrag zum Bearbeiten übergeben wird
+  useEffect(() => {
+    if (entryToEdit) {
+      setForm(convertEntryToFormState(entryToEdit));
+    } else {
+      setForm(initialFormState); // Zurücksetzen, wenn kein Eintrag mehr da ist
+    }
+  }, [entryToEdit]);
+
 
   const extrasDisabled = useMemo(() => {
     const filledExtras = [form.ap2.planning.extra, form.ap2.development.extra, form.ap2.economy.extra].filter(Boolean);
@@ -180,16 +225,30 @@ export default function AddResult() {
       return;
     }
     setLoading(true);
+
+    const payload = buildPayload();
+    // URL und Methode basierend auf isEditMode anpassen (mit korrektem Endpunkt)
+    const url = isEditMode
+      ? `http://127.0.0.1:8000/exam/${entryToEdit.id}` // <-- KORRIGIERTER ENDPUNKT
+      : "http://127.0.0.1:8000/exam/save";
+    const method = isEditMode ? "PUT" : "POST";
+
+
     try {
-      const resp = await fetch("http://127.0.0.1:8000/exam/save", {
-        method: "POST",
+      const resp = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildPayload()),
+        body: JSON.stringify(payload),
       });
+
       if (resp.ok) {
-        setSnackbar({ open: true, severity: "success", message: t('add.snackbar.saveSuccess') });
-        setForm(initialFormState);
-        setErrors({});
+        setSnackbar({ open: true, severity: "success", message: t(isEditMode ? 'add.snackbar.updateSuccess' : 'add.snackbar.saveSuccess') });
+        if (onSaveSuccess) {
+          onSaveSuccess(); // Callback für Parent-Komponente
+        } else {
+          setForm(initialFormState); // Nur im Hinzufügen-Modus zurücksetzen
+          setErrors({});
+        }
       } else {
         const text = await resp.text() || `${resp.status} ${resp.statusText}`;
         setSnackbar({ open: true, severity: "error", message: t('add.snackbar.serverError', { error: text }) });
@@ -202,17 +261,22 @@ export default function AddResult() {
   };
 
   const resetForm = () => {
-    setForm(initialFormState);
+    setForm(isEditMode && entryToEdit ? convertEntryToFormState(entryToEdit) : initialFormState);
     setErrors({});
   }
 
   const handleSnackbarClose = () => setSnackbar((s) => ({ ...s, open: false }));
 
+
   return (
-    <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
+    <Paper elevation={isEditMode ? 0 : 3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
       <Box mb={2}>
-        <Typography variant="h5" component="h1" gutterBottom>{t('add.title')}</Typography>
-        <Typography variant="body2" color="text.secondary">{t('add.subtitle')}</Typography>
+        <Typography variant="h5" component="h1" gutterBottom>
+          {isEditMode ? t('add.edit.title') : t('add.title')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {isEditMode ? t('edit.subtitle') : t('add.subtitle')}
+        </Typography>
       </Box>
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <Grid container spacing={2}>

@@ -55,6 +55,9 @@
             "saveSuccess": "Erfolgreich gespeichert.",
             "serverError": "Serverfehler: {{error}}",
             "networkError": "Netzwerkfehler: {{error}}"
+        },
+        "edit": {
+            "title": "Ergebnis bearbeiten"
         }
     },
     "results": {

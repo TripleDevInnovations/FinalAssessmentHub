@@ -36,7 +36,7 @@
             }
         },
         "projectWork": {
-            "title": "مشروع الشركة",
+            "title": "عمل مشروع الشركة",
             "presentationLabel": "العرض التقديمي",
             "implementationLabel": "التخطيط والتنفيذ"
         },
@@ -55,21 +55,24 @@
             "saveSuccess": "تم الحفظ بنجاح.",
             "serverError": "خطأ في الخادم: {{error}}",
             "networkError": "خطأ في الشبكة: {{error}}"
+        },
+        "edit": {
+            "title": "تعديل النتيجة"
         }
     },
     "results": {
-        "confirm_delete_entry": "هل تريد حقًا حذف هذا الإدخال؟",
+        "confirm_delete_entry": "هل تريد حذف الإدخال حقًا؟",
         "entry_deleted": "تم حذف الإدخال",
         "error_prefix": "خطأ",
         "entries_count": "الإدخالات ({{count}})",
-        "loading_entries": "جارٍ تحميل الإدخالات…",
+        "loading_entries": "جاري تحميل الإدخالات…",
         "no_entries_yet": "لا توجد إدخالات بعد.",
         "select_entry_prompt": "اختر إدخالًا من القائمة لعرض التفاصيل.",
         "open_menu_aria": "فتح القائمة",
         "delete_aria": "حذف",
         "exam_1": "الامتحان النهائي 1",
         "points": "النقاط",
-        "project_work": "مشروع الشركة",
+        "project_work": "عمل مشروع الشركة",
         "presentation": "العرض التقديمي",
         "documentation": "التوثيق",
         "exam_2": "الامتحان النهائي 2",
@@ -82,26 +85,30 @@
         "grade": "الدرجة",
         "calculate_button": "احسب",
         "calculated": "تم الحساب",
+        "passed": "ناجح",
+        "failed": "راسب",
+        "project_work_overall": "الإجمالي",
         "speak": {
-            "ap1": "الامتحان النهائي الجزء الأول: التقدير {{grade}} مع {{points}} نقطة.",
-            "ap2_planning": "الامتحان النهائي الجزء الثاني: تخطيط منتج برمجي: التقدير {{grade}} مع {{points}} نقطة.",
-            "ap2_development": "التطوير والتنفيذ: التقدير {{grade}} مع {{points}} نقطة.",
-            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: التقدير {{grade}} مع {{points}} نقطة.",
-            "pw_project": "عمل مشروع الشركة: التوثيق: التقدير {{grade}} مع {{points}} نقطة.",
-            "pw_presentation": "العرض التقديمي: التقدير {{grade}} مع {{points}} نقطة.",
-            "overall": "النتيجة الإجمالية هي: التقدير {{grade}} مع {{points}} نقطة."
+            "ap1": "الامتحان النهائي الجزء 1: الدرجة {{grade}} مع {{points}} نقطة.",
+            "ap2_planning": "الامتحان النهائي الجزء 2: تخطيط منتج برمجي: الدرجة {{grade}} مع {{points}} نقطة.",
+            "ap2_development": "التطوير والتنفيذ: الدرجة {{grade}} مع {{points}} نقطة.",
+            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: الدرجة {{grade}} مع {{points}} نقطة.",
+            "pw_project": "عمل مشروع الشركة: التوثيق: الدرجة {{grade}} مع {{points}} نقطة.",
+            "pw_presentation": "العرض التقديمي: الدرجة {{grade}} مع {{points}} نقطة.",
+            "speak.pw_overall": "ينتج عن ذلك النتيجة التالية لعمل مشروع الشركة: الدرجة {{grade}} مع {{points}} نقطة.",
+            "overall": "النتيجة الإجمالية الخاصة بك هي: الدرجة {{grade}} مع {{points}} نقطة."
         }
     },
     "settings": {
         "title": "تطبيقي الصغير",
         "home_welcome": "مرحبًا بك في الصفحة الرئيسية",
         "language": "اللغة",
-        "contact_text": "اتصل بنا.",
+        "contact_text": "تواصل معنا.",
         "settings_text": "الإعدادات",
         "change_language": "تغيير اللغة",
         "settings_change_language_note": "اختر لغة العرض (لن يتم حفظها).",
         "appearance": "المظهر",
-        "dark_mode": "داكن",
+        "dark_mode": "غامق",
         "light_mode": "فاتح",
         "toggle_theme_button": "تبديل المظهر",
         "note_no_persist": "لن يتم حفظ اختيارك؛ سيتم استخدام اللغة الافتراضية عند إعادة التحميل."

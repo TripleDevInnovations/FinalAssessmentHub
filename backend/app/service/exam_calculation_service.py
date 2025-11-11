@@ -1,6 +1,6 @@
 from typing import Optional
 from backend.app.model.final_exam_result_input import FinalExamResultInput, AP2Part
-from backend.app.model.final_exam_result_output import FinalExamResultOutput, ComponentResult, PWOutput, AP2Output
+from backend.app.model.final_exam_result_output import FinalExamResultOutput
 
 
 class ExamCalculationService:

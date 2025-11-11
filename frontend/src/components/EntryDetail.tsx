@@ -19,9 +19,10 @@ import CalculateIcon from "@mui/icons-material/Calculate";
 // @ts-ignore
 import { useTranslation, TFunction } from "react-i18next";
 import { Entry, CalculationResult, GradeAndPoints } from "../types";
-import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis"; // Pfad bleibt gleich
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import StopIcon from '@mui/icons-material/Stop'; // Importiere das Stop-Icon
+import StopIcon from '@mui/icons-material/Stop';
+import EditIcon from '@mui/icons-material/Edit';
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -47,11 +48,12 @@ interface EntryDetailHeaderProps {
   entry: Entry;
   calculation: CalculationResult | null;
   isCalculating: boolean;
-  isSpeaking: boolean; // Neue Prop für den Wiedergabestatus
+  isSpeaking: boolean;
   onMenu?: () => void;
   onCalculate: () => void;
+  onEdit: () => void;
   onDelete: () => void;
-  onReadAloud: () => void; // Umbenannt zu onReadAloud zur Klarheit
+  onReadAloud: () => void;
   t: TFunction;
 }
 
@@ -62,6 +64,7 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
   isSpeaking,
   onMenu,
   onCalculate,
+  onEdit,
   onDelete,
   onReadAloud,
   t,
@@ -120,6 +123,9 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
           </IconButton>
         </Tooltip>
       )}
+      <IconButton onClick={onEdit} aria-label={t("results.edit_aria")}>
+        <EditIcon />
+      </IconButton>
       <IconButton
         color="error"
         onClick={onDelete}
@@ -173,13 +179,14 @@ const ExamPartCard: React.FC<ExamPartCardProps> = ({
 
 interface EntryDetailProps {
   entry: Entry | null;
+  onEdit: (id:string) => void;
   onDelete: (id: string) => void;
   onMenu?: () => void;
 }
 
-const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) => {
+const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMenu }) => {
   const { t, i18n } = useTranslation();
-  const { speak, cancel, isSpeaking } = useSpeechSynthesis(); // Hook mit neuen Funktionen
+  const { speak, cancel, isSpeaking } = useSpeechSynthesis();
   const [calculation, setCalculation] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [calcError, setCalcError] = useState<string | null>(null);
@@ -188,7 +195,7 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
     setCalculation(null);
     setCalcError(null);
     setIsCalculating(false);
-    cancel(); // Stoppt die Sprachausgabe beim Wechsel des Eintrags
+    cancel();
   }, [entry?.id, cancel]);
 
   const generateSpokenText = (result: CalculationResult) => {
@@ -241,12 +248,12 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
         entry={entry}
         calculation={calculation}
         isCalculating={isCalculating}
-        isSpeaking={isSpeaking} // isSpeaking Prop übergeben
+        isSpeaking={isSpeaking} 
         onMenu={onMenu}
         onCalculate={() => handleCalculate(entry.id)}
+        onEdit={() => onEdit(entry.id)}
         onDelete={() => onDelete(entry.id)}
         onReadAloud={() => {
-          // Logik zum Starten/Stoppen der Wiedergabe
           if (isSpeaking) {
             cancel();
           } else if (calculation) {
@@ -312,7 +319,6 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
           <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
             <SectionHeader
               title={t("results.exam_2") ?? "Abschlussprüfung — Teil 2"}
-              subtitle={t("results.exam2_subtitle") ?? ""}
             />
             <Grid container spacing={2}>
               <ExamPartCard
@@ -345,8 +351,8 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onDelete, onMenu }) =>
               sx={{
                 mt: 2,
                 p: 2,
-                borderRadius: 2, // Abgerundete Ecken
-                bgcolor: "action.hover", // Theming-fähige Hintergrundfarbe
+                borderRadius: 2,
+                bgcolor: "action.hover",
               }}
             >
               <SectionHeader

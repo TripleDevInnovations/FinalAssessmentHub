@@ -2,7 +2,7 @@
     "topbar": {
         "title": "Final Assessment Hub",
         "logoAlt": "Logo",
-        "mainMenu": "Main Menu Tabs",
+        "mainMenu": "Main menu tabs",
         "add": "Add",
         "results": "Results",
         "settings": "Settings",
@@ -43,7 +43,7 @@
         "helper": {
             "pointsRange": "0–100",
             "optional": "Optional",
-            "extraDisabled": "Disabled because another extra exam is active"
+            "extraDisabled": "Disabled because another additional exam is active"
         },
         "validation": {
             "nameRequired": "Name is required.",
@@ -51,14 +51,17 @@
             "valueBetween": "Value must be between 0 and 100"
         },
         "snackbar": {
-            "validationError": "Please fix the errors before submitting.",
+            "validationError": "Please fix errors before submitting.",
             "saveSuccess": "Saved successfully.",
             "serverError": "Server error: {{error}}",
             "networkError": "Network error: {{error}}"
+        },
+        "edit": {
+            "title": "Edit Result"
         }
     },
     "results": {
-        "confirm_delete_entry": "Really delete this entry?",
+        "confirm_delete_entry": "Really delete entry?",
         "entry_deleted": "Entry deleted",
         "error_prefix": "Error",
         "entries_count": "Entries ({{count}})",
@@ -66,7 +69,7 @@
         "no_entries_yet": "No entries yet.",
         "select_entry_prompt": "Select an entry from the list to view details.",
         "open_menu_aria": "Open menu",
-        "delete_aria": "delete",
+        "delete_aria": "Delete",
         "exam_1": "Final Exam 1",
         "points": "Points",
         "project_work": "Company Project Work",
@@ -82,6 +85,9 @@
         "grade": "Grade",
         "calculate_button": "Calculate",
         "calculated": "Calculated",
+        "passed": "Passed",
+        "failed": "Failed",
+        "project_work_overall": "Overall",
         "speak": {
             "ap1": "Final Exam Part 1: Grade {{grade}} with {{points}} points.",
             "ap2_planning": "Final Exam Part 2: Planning a Software Product: Grade {{grade}} with {{points}} points.",
@@ -89,6 +95,7 @@
             "ap2_economy": "Economics and Social Studies: Grade {{grade}} with {{points}} points.",
             "pw_project": "Company Project Work: Documentation: Grade {{grade}} with {{points}} points.",
             "pw_presentation": "Presentation: Grade {{grade}} with {{points}} points.",
+            "speak.pw_overall": "This results in the following outcome for the company project work: Grade {{grade}} with {{points}} points.",
             "overall": "Your overall result is: Grade {{grade}} with {{points}} points."
         }
     },
@@ -104,7 +111,7 @@
         "dark_mode": "Dark",
         "light_mode": "Light",
         "toggle_theme_button": "Toggle Appearance",
-        "note_no_persist": "Your selection will not be saved; the default language will be used on reload."
+        "note_no_persist": "Your selection is not saved; the default language will be used when reloading."
     },
     "about": {}
 }

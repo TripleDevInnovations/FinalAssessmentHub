@@ -1,23 +1,19 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Link } from "@mui/material";
 
-const InformationPage: React.FC = () => {
-  return (
-    <Box
-      sx={{
-        p: 4,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-      }}
+const InformationPage: React.FC = () => (
+  <Box
+  >
+    <Link
+      href="https://github.com/TripleDevInnovations/FinalAssessmentHub"
+      target="_blank"
+      rel="noopener noreferrer"
+      underline="hover"
+      variant="h5"
     >
-      <Typography variant="h4" component="h1">
-        Information
-      </Typography>
-    </Box>
-  );
-};
+      https://github.com/TripleDevInnovations/FinalAssessmentHub
+    </Link>
+  </Box>
+);
 
 export default InformationPage;

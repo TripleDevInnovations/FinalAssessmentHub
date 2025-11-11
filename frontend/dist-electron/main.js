@@ -1,8 +1,6 @@
-import { app, BrowserWindow } from "electron";
-import { createRequire } from "node:module";
+import { app, BrowserWindow, nativeImage } from "electron";
 import { fileURLToPath } from "node:url";
-import path from "node:path";
-createRequire(import.meta.url);
+import * as path from "path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname, "..");
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
@@ -11,10 +9,12 @@ const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
 let win;
 function createWindow() {
+  const iconPath = path.join(__dirname, "..", "src", "assets", "logo_white.png");
+  const icon = nativeImage.createFromPath(iconPath);
   win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     width: 1200,
     height: 800,
+    icon,
     resizable: true,
     fullscreenable: true,
     maximizable: true,
