@@ -38,12 +38,10 @@ const App: React.FC = () => {
           bgcolor: "background.default"
         }}
       >
-        {/* TopBar bleibt sichtbar */}
         <Box sx={{ flex: "0 0 auto" }}>
           <TopBar value={tabIndex} onChange={handleTabChange} />
         </Box>
 
-        {/* Inhalt: nimmt den restlichen Platz ein und ist scrollable */}
         <Container
           sx={{
             flex: "1 1 auto",

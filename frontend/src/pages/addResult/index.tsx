@@ -5,10 +5,8 @@ import { Paper, Box, Typography, TextField, Divider, Stack, Button, CircularProg
 import Grid from '@mui/material/GridLegacy';
 import { ExamPayload, Entry } from "../../types";
 
-// === Hilfsfunktionen und Konstanten ===
 const onlyDigits = (s: string) => s.replace(`/\D+/g`, "");
 
-// Definieren des Formularzustands an einer zentralen Stelle für einfaches Zurücksetzen
 const initialFormState = {
   name: "",
   ap1: "",
@@ -24,9 +22,8 @@ const initialFormState = {
 };
 
 type FormState = typeof initialFormState;
-type FormErrors = { [key: string]: any }; // Für Einfachheit, kann detaillierter typisiert werden
+type FormErrors = { [key: string]: any };
 
-// Props für numerische Felder, um Wiederholungen im JSX zu vermeiden
 const numericInputProps = {
   inputMode: "numeric" as const,
   pattern: "`[0-9]*`",
@@ -85,7 +82,6 @@ interface AddResultProps {
   onCancel?: () => void;
 }
 
-// Konvertierungsfunktion, um ein Entry-Objekt in den Formularzustand zu überführen
 const convertEntryToFormState = (entry: Entry): FormState => {
   const toString = (val: number | null | undefined) => (val != null ? String(val) : "");
   return {
@@ -130,12 +126,11 @@ export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps
   });
   const isEditMode = !!entryToEdit;
 
-  // Formular mit Daten füllen, wenn ein Eintrag zum Bearbeiten übergeben wird
   useEffect(() => {
     if (entryToEdit) {
       setForm(convertEntryToFormState(entryToEdit));
     } else {
-      setForm(initialFormState); // Zurücksetzen, wenn kein Eintrag mehr da ist
+      setForm(initialFormState);
     }
   }, [entryToEdit]);
 
@@ -155,14 +150,13 @@ export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps
 
     setForm((prev) => {
       const keys = key.split('.');
-      const next = JSON.parse(JSON.stringify(prev)); // Tiefe Kopie für einfache state-updates
+      const next = JSON.parse(JSON.stringify(prev));
       let current = next;
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = processedValue;
 
-      // Exklusivität für Zusatzprüfungen
       if (key.includes('extra') && processedValue.trim() !== "") {
         if (key !== 'ap2.planning.extra') next.ap2.planning.extra = "";
         if (key !== 'ap2.development.extra') next.ap2.development.extra = "";
@@ -191,7 +185,7 @@ export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps
 
     Object.entries(fieldsToValidate).forEach(([key, value]) => {
       const v = String(value).trim();
-      if (v === "") return; // Leere Felder sind gültig
+      if (v === "") return;
 
       if (!/^\d+$/.test(v) || Number(v) < 0 || Number(v) > 100) {
         newErrors[key] = t('add.validation.valueBetween');
@@ -238,9 +232,8 @@ export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps
     setLoading(true);
 
     const payload = buildPayload();
-    // URL und Methode basierend auf isEditMode anpassen (mit korrektem Endpunkt)
     const url = isEditMode
-      ? `http://127.0.0.1:8000/exam/${entryToEdit.id}` // <-- KORRIGIERTER ENDPUNKT
+      ? `http://127.0.0.1:8000/exam/${entryToEdit.id}`
       : "http://127.0.0.1:8000/exam/save";
     const method = isEditMode ? "PUT" : "POST";
 
@@ -255,9 +248,9 @@ export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps
       if (resp.ok) {
         setSnackbar({ open: true, severity: "success", message: t(isEditMode ? 'add.snackbar.updateSuccess' : 'add.snackbar.saveSuccess') });
         if (onSaveSuccess) {
-          onSaveSuccess(); // Callback für Parent-Komponente
+          onSaveSuccess();
         } else {
-          setForm(initialFormState); // Nur im Hinzufügen-Modus zurücksetzen
+          setForm(initialFormState);
           setErrors({});
         }
       } else {
@@ -286,7 +279,7 @@ export default function AddResult({ entryToEdit, onSaveSuccess }: AddResultProps
           {isEditMode ? t('add.edit.title') : t('add.title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {isEditMode ? t('edit.subtitle') : t('add.subtitle')}
+          {isEditMode ? t('add.edit.subtitle') : t('add.subtitle')}
         </Typography>
       </Box>
       <Box component="form" onSubmit={handleSubmit} noValidate>
