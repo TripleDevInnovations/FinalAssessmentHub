@@ -51,9 +51,11 @@ function startBundledBackend(): Promise<void> {
 
     makeExecutableIfNeeded(exePath)
 
-    // spawn the backend. Pass port via env so the binary can read it
+    // detached true auf POSIX -> neue Prozessgruppe, damit wir später die ganze Gruppe killen können
+    const useDetached = process.platform !== 'win32'
+
     backendProcess = spawn(exePath, [], {
-      detached: false,
+      detached: useDetached,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: { ...process.env, BACKEND_PORT: String(BACKEND_PORT) }
     })
@@ -68,7 +70,7 @@ function startBundledBackend(): Promise<void> {
     backendProcess.on('exit', (code, signal) => {
       console.log(`Backend exited: code=${code} signal=${signal}`)
       backendProcess = null
-      // Falls das Backend unerwartet beendet wird, zeige Info (optional)
+      // optional: nur anzeigen, wenn unerwartet
       dialog.showErrorBox('Backend beendet', 'Das lokale Backend wurde beendet. Die Anwendung kann nicht korrekt funktionieren.')
     })
 
@@ -76,29 +78,107 @@ function startBundledBackend(): Promise<void> {
     waitForBackendReady(50, 200)
       .then(() => resolve())
       .catch(err => {
-        // Backend hat sich nicht rechtzeitig gemeldet -> kill process & reject
-        try { backendProcess?.kill('SIGKILL') } catch (e) { /* ignore */ }
+        // Backend hat sich nicht rechtzeitig gemeldet -> sauber beenden
+        try { stopBundledBackendSync() } catch (e) { /* ignore */ }
         backendProcess = null
         reject(err)
       })
   })
 }
 
-function stopBundledBackend(): void {
-  if (!backendProcess) return
+/**
+ * Synchronous stop routine: beendet ganze Prozess-Gruppe / Baum plattformübergreifend.
+ */
+function stopBundledBackendSync(): void {
   try {
-    backendProcess.kill('SIGTERM')
-    // fallback kill nach 2s
-    setTimeout(() => {
-      if (backendProcess) {
-        try { backendProcess.kill('SIGKILL') } catch (e) { /* ignore */ }
-        backendProcess = null
+    const req = http.request(
+      { hostname: '127.0.0.1', port: BACKEND_PORT, path: '/shutdown', method: 'POST', timeout: 500 },
+      res => {
+        console.log('Shutdown endpoint called, status:', res.statusCode)
       }
-    }, 2000)
+    )
+    req.on('error', (err) => console.warn('Shutdown request failed:', err.message))
+    req.end()
+  } catch (e) {
+    console.warn('Could not call shutdown endpoint:', e)
+  }
+
+
+  if (!backendProcess || !backendProcess.pid) return
+
+  const pid = backendProcess.pid
+  console.log(`Stopping backend pid=${pid} platform=${process.platform}`)
+
+  try {
+    if (process.platform === 'win32') {
+      // Windows: taskkill /T /F <pid>
+      const { spawnSync } = require('child_process')
+      const res = spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'])
+      if (res.error) {
+        console.error('taskkill failed', res.error)
+      } else {
+        console.log('taskkill stdout:', res.stdout?.toString(), 'stderr:', res.stderr?.toString())
+      }
+    } else {
+      // POSIX: kill process group (negative pid)
+      try {
+        process.kill(-pid, 'SIGTERM')
+      } catch (e) {
+        console.warn('SIGTERM to process group failed', e)
+      }
+
+      // kurzer Polling-Wartezeitraum (bis zu 2s)
+      const TIMEOUT_MS = 2000
+      const POLL_MS = 50
+      const start = Date.now()
+      while (Date.now() - start < TIMEOUT_MS) {
+        try {
+          // check if process still exists
+          process.kill(pid, 0)
+          // kurze Pause
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, POLL_MS)
+        } catch (err) {
+          // Prozess existiert nicht mehr
+          break
+        }
+      }
+
+      // Finaler Hard-Kill auf Prozessgruppe
+      try {
+        process.kill(-pid, 'SIGKILL')
+      } catch (e) {
+        // ignore
+      }
+    }
   } catch (err) {
     console.error('Error stopping backend', err)
+  } finally {
+    backendProcess = null
   }
 }
+
+// Hook die Stopper an App- & Prozess-Events (damit bei allen Exit-Pfaden sauber aufgeräumt wird)
+app.on('before-quit', () => {
+  stopBundledBackendSync()
+})
+
+app.on('quit', () => {
+  stopBundledBackendSync()
+})
+
+// Node-Signale (z.B. Ctrl+C beim Entwickeln)
+process.on('SIGINT', () => {
+  stopBundledBackendSync()
+  process.exit(0)
+})
+process.on('SIGTERM', () => {
+  stopBundledBackendSync()
+  process.exit(0)
+})
+process.on('exit', () => {
+  stopBundledBackendSync()
+})
+
 
 function waitForBackendReady(retries = 50, intervalMs = 200): Promise<void> {
   const url = `http://127.0.0.1:${BACKEND_PORT}/health`
@@ -189,9 +269,4 @@ app.whenReady().then(async () => {
     dialog.showErrorBox('Startfehler', 'Das Backend konnte nicht gestartet werden: ' + err?.message)
     app.quit()
   }
-})
-
-// Beim Beenden das Backend stoppen
-app.on('before-quit', () => {
-  stopBundledBackend()
 })
