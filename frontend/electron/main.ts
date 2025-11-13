@@ -1,59 +1,79 @@
-import { app, BrowserWindow, nativeImage, dialog } from 'electron'
+import { app, BrowserWindow, nativeImage, dialog, crashReporter } from 'electron'
 import { fileURLToPath } from 'node:url'
 import * as path from 'path'
 import * as fs from 'fs'
 import { spawn, ChildProcess } from 'child_process'
 import * as http from 'http'
 
+app.commandLine.appendSwitch('disable-gpu')
+app.commandLine.appendSwitch('disable-gpu-compositing')
+app.commandLine.appendSwitch('disable-software-rasterizer')
+app.commandLine.appendSwitch('disable-accelerated-2d-canvas')
+app.commandLine.appendSwitch('disable-accelerated-video-decode')
+
+app.disableHardwareAcceleration()
+
+// ----------------------------------------------------------------------------
+// CrashReporter (lokal)
+crashReporter.start({
+  productName: 'FinalAssessmentHub',
+  companyName: 'DeinName',
+  uploadToServer: false,
+  compress: true
+})
+
+// ----------------------------------------------------------------------------
+// Logging-Helper
+const userDataPath = app.getPath ? app.getPath('userData') : path.join(process.cwd(), '.userdata')
+const logPath = path.join(userDataPath, 'finalassessment-main.log')
+function appendLog(msg: string) {
+  try {
+    fs.mkdirSync(path.dirname(logPath), { recursive: true })
+    fs.appendFileSync(logPath, `${new Date().toISOString()} ${msg}\n`)
+  } catch (e) {
+    try { console.error('Logging failed', e) } catch {}
+  }
+}
+appendLog('=== App starting (early) ===')
+
+process.on('uncaughtException', (err) => appendLog('uncaughtException: ' + (err && (err.stack || err.message || String(err)))))
+process.on('unhandledRejection', (r) => appendLog('unhandledRejection: ' + String(r)))
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// The built directory structure
 process.env.APP_ROOT = path.join(__dirname, '..')
-
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
-
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
-
-let win: BrowserWindow | null = null
+export const MAIN_DIST = path.join(process.env.APP_ROOT as string, 'dist-electron')
+export const RENDERER_DIST = path.join(process.env.APP_ROOT as string, 'dist')
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT as string, 'public') : RENDERER_DIST
 
 // --- Backend control ---
 const BACKEND_PORT = Number(process.env.BACKEND_PORT ?? 8000)
 let backendProcess: ChildProcess | null = null
 
 function getBundledBackendPath(): string {
-  // electron-builder legt extraResources unter process.resourcesPath
-  // Ich nehme an, du packst in extraResources "from: dist_backend, to: backend"
-  // dann liegt die Datei unter: <resources>/backend/<exeName>
   const exeName = process.platform === 'win32' ? 'backend.exe' : 'backend'
-  return path.join(process.resourcesPath, 'backend', exeName)
+  return path.join(process.resourcesPath || process.cwd(), 'backend', exeName)
 }
 
 function makeExecutableIfNeeded(p: string) {
   if (process.platform !== 'win32') {
-    try {
-      fs.chmodSync(p, 0o755)
-    } catch (err) {
-      console.warn('chmod failed', err)
-    }
+    try { fs.chmodSync(p, 0o755) } catch (err) { appendLog('chmod failed: ' + String(err)) }
   }
 }
 
 function startBundledBackend(): Promise<void> {
   return new Promise((resolve, reject) => {
     const exePath = getBundledBackendPath()
-
+    appendLog('Attempt to start bundled backend at ' + exePath)
     if (!fs.existsSync(exePath)) {
+      appendLog('Backend binary not found at ' + exePath)
       return reject(new Error(`Backend binary not found at ${exePath}`))
     }
 
     makeExecutableIfNeeded(exePath)
 
-    // detached true auf POSIX -> neue Prozessgruppe, damit wir später die ganze Gruppe killen können
     const useDetached = process.platform !== 'win32'
-
     backendProcess = spawn(exePath, [], {
       detached: useDetached,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -61,212 +81,181 @@ function startBundledBackend(): Promise<void> {
     })
 
     backendProcess.stdout?.on('data', d => {
-      console.log('[backend stdout]', d.toString())
+      const s = d.toString()
+      appendLog('[backend stdout] ' + s.replace(/\r?\n/g, '\\n'))
+      try { console.log('[backend stdout]', s) } catch {}
     })
     backendProcess.stderr?.on('data', d => {
-      console.error('[backend stderr]', d.toString())
+      const s = d.toString()
+      appendLog('[backend stderr] ' + s.replace(/\r?\n/g, '\\n'))
+      try { console.error('[backend stderr]', s) } catch {}
     })
 
     backendProcess.on('exit', (code, signal) => {
-      console.log(`Backend exited: code=${code} signal=${signal}`)
+      appendLog(`Backend exited: code=${code} signal=${signal}`)
       backendProcess = null
-      // optional: nur anzeigen, wenn unerwartet
-      dialog.showErrorBox('Backend beendet', 'Das lokale Backend wurde beendet. Die Anwendung kann nicht korrekt funktionieren.')
+      try {
+        dialog.showErrorBox('Backend beendet', 'Das lokale Backend wurde beendet. Die Anwendung kann nicht korrekt funktionieren.')
+      } catch {}
     })
 
-    // Warte bis /health antwortet
-    waitForBackendReady(50, 200)
-      .then(() => resolve())
-      .catch(err => {
-        // Backend hat sich nicht rechtzeitig gemeldet -> sauber beenden
-        try { stopBundledBackendSync() } catch (e) { /* ignore */ }
-        backendProcess = null
-        reject(err)
+    const maxWait = 3000
+    const start = Date.now()
+    const tryConnect = () => {
+      const req = http.request({ hostname: '127.0.0.1', port: BACKEND_PORT, path: '/health', method: 'GET', timeout: 400 }, res => {
+        appendLog('Backend healthcheck succeeded (status ' + res.statusCode + ')')
+        req.destroy()
+        resolve()
       })
+      req.on('error', () => {
+        if (Date.now() - start < maxWait) {
+          setTimeout(tryConnect, 200)
+        } else {
+          appendLog('Backend did not become healthy within timeout — resolving anyway')
+          resolve()
+        }
+      })
+      req.end()
+    }
+    tryConnect()
   })
 }
 
-/**
- * Synchronous stop routine: beendet ganze Prozess-Gruppe / Baum plattformübergreifend.
- */
+/*** Synchronous stop routine: beendet ganze Prozess-Gruppe / Baum plattformübergreifend.*/
 function stopBundledBackendSync(): void {
   try {
-    const req = http.request(
-      { hostname: '127.0.0.1', port: BACKEND_PORT, path: '/shutdown', method: 'POST', timeout: 500 },
-      res => {
-        console.log('Shutdown endpoint called, status:', res.statusCode)
-      }
-    )
-    req.on('error', (err) => console.warn('Shutdown request failed:', err.message))
+    const req = http.request({ hostname: '127.0.0.1', port: BACKEND_PORT, path: '/shutdown', method: 'POST', timeout: 500 },
+      res => { appendLog('Shutdown endpoint called, status:' + res.statusCode) })
+    req.on('error', (err) => appendLog('Shutdown request failed: ' + err.message))
     req.end()
-  } catch (e) {
-    console.warn('Could not call shutdown endpoint:', e)
-  }
-
+  } catch (e) { appendLog('Could not call shutdown endpoint: ' + String(e)) }
 
   if (!backendProcess || !backendProcess.pid) return
-
   const pid = backendProcess.pid
-  console.log(`Stopping backend pid=${pid} platform=${process.platform}`)
-
+  appendLog(`Stopping backend pid=${pid} platform=${process.platform}`)
   try {
     if (process.platform === 'win32') {
-      // Windows: taskkill /T /F <pid>
       const { spawnSync } = require('child_process')
       const res = spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'])
-      if (res.error) {
-        console.error('taskkill failed', res.error)
-      } else {
-        console.log('taskkill stdout:', res.stdout?.toString(), 'stderr:', res.stderr?.toString())
-      }
+      if (res.error) appendLog('taskkill failed: ' + String(res.error))
+      else appendLog('taskkill stdout: ' + (res.stdout?.toString() || '') + ' stderr: ' + (res.stderr?.toString() || ''))
     } else {
-      // POSIX: kill process group (negative pid)
-      try {
-        process.kill(-pid, 'SIGTERM')
-      } catch (e) {
-        console.warn('SIGTERM to process group failed', e)
-      }
+      try { process.kill(-pid, 'SIGTERM') } catch (e) { appendLog('SIGTERM to process group failed: ' + String(e)) }
 
-      // kurzer Polling-Wartezeitraum (bis zu 2s)
       const TIMEOUT_MS = 2000
       const POLL_MS = 50
       const start = Date.now()
+      let gracefullyExited = false
       while (Date.now() - start < TIMEOUT_MS) {
         try {
-          // check if process still exists
           process.kill(pid, 0)
-          // kurze Pause
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, POLL_MS)
         } catch (err) {
-          // Prozess existiert nicht mehr
+          gracefullyExited = true
           break
         }
       }
-
-      // Finaler Hard-Kill auf Prozessgruppe
-      try {
-        process.kill(-pid, 'SIGKILL')
-      } catch (e) {
-        // ignore
+      if (!gracefullyExited) {
+        appendLog('Backend did not exit gracefully, sending SIGKILL.')
+        try { process.kill(-pid, 'SIGKILL') } catch (e) { appendLog('SIGKILL failed: ' + String(e)) }
       }
     }
   } catch (err) {
-    console.error('Error stopping backend', err)
-  } finally {
-    backendProcess = null
-  }
+    appendLog('Error stopping backend: ' + String(err))
+  } finally { backendProcess = null }
 }
 
-// Hook die Stopper an App- & Prozess-Events (damit bei allen Exit-Pfaden sauber aufgeräumt wird)
+// Hooks
 app.on('before-quit', () => {
+  appendLog('before-quit called')
   stopBundledBackendSync()
 })
-
-app.on('quit', () => {
-  stopBundledBackendSync()
-})
-
-// Node-Signale (z.B. Ctrl+C beim Entwickeln)
-process.on('SIGINT', () => {
-  stopBundledBackendSync()
-  process.exit(0)
-})
-process.on('SIGTERM', () => {
-  stopBundledBackendSync()
-  process.exit(0)
-})
-process.on('exit', () => {
-  stopBundledBackendSync()
-})
-
-
-function waitForBackendReady(retries = 50, intervalMs = 200): Promise<void> {
-  const url = `http://127.0.0.1:${BACKEND_PORT}/health`
-  return new Promise((resolve, reject) => {
-    let attempts = 0
-    const t = setInterval(() => {
-      attempts++
-      const req = http.get(url, res => {
-        // status 200 => ready
-        if (res.statusCode === 200) {
-          clearInterval(t)
-          resolve()
-        } else if (attempts >= retries) {
-          clearInterval(t)
-          reject(new Error('Backend antwortete mit Status ' + res.statusCode))
-        }
-        // andernfalls weiter poll
-      })
-      req.on('error', () => {
-        if (attempts >= retries) {
-          clearInterval(t)
-          reject(new Error('Backend nicht erreichbar (Connection error)'))
-        }
-      })
-      req.setTimeout(1000, () => {
-        req.destroy()
-      })
-    }, intervalMs)
-  })
-}
+process.on('SIGINT', () => { appendLog('SIGINT'); stopBundledBackendSync(); process.exit(0) })
+process.on('SIGTERM', () => { appendLog('SIGTERM'); stopBundledBackendSync(); process.exit(0) })
 
 // --- Window / app lifecycle ---
+function getAssetPath(...paths: string[]) {
+  const rel = path.join(...paths)
+  if (app.isPackaged) return path.join(process.resourcesPath || process.cwd(), rel)
+  else return path.join(__dirname, '..', 'src', rel)
+}
+
+let win: BrowserWindow | null = null
+
 function createWindow() {
-  const iconPath = path.join(__dirname, '..', 'src', 'assets', 'logo_white.png')
-  const icon = nativeImage.createFromPath(iconPath)
+  const iconPath = getAssetPath('assets', 'logo_white.png')
+  if (!fs.existsSync(iconPath)) appendLog('Icon nicht gefunden unter: ' + iconPath)
+  let icon = nativeImage.createFromPath(iconPath)
+  if (icon.isEmpty && icon.isEmpty()) appendLog('nativeImage konnte Icon nicht laden (isEmpty): ' + iconPath)
+
+  if (process.platform === 'darwin' && icon && !icon.isEmpty()) {
+    try { app.dock.setIcon(icon) } catch (err) { appendLog('app.dock.setIcon fehlgeschlagen: ' + String(err)) }
+  }
 
   win = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon,
+    icon: icon && !icon.isEmpty() ? icon : undefined as any,
     resizable: true,
     fullscreenable: true,
     maximizable: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
+      preload: path.join(__dirname, 'preload.mjs')
     }
   })
 
-  // Test active push message to Renderer-process.
+  win.webContents.on('render-process-gone', (_event: Electron.Event, details: Electron.RenderProcessGoneDetails) => {
+    appendLog('render-process-gone: ' + JSON.stringify(details))
+    try {
+      dialog.showErrorBox('Renderer abgestürzt', `Der Renderer-Prozess ist abgestürzt:\n${details.reason}`)
+      const fallback = path.join(RENDERER_DIST, 'error.html')
+      if (fs.existsSync(fallback)) {
+        win?.loadFile(fallback).catch(e => appendLog('Loading fallback failed: ' + String(e)))
+      }
+    } catch (e) { appendLog('Error handling render-process-gone: ' + String(e)) }
+  })
+
+  ;(win.webContents as any).on('child-process-gone', (_event: any, details: any) => {
+    appendLog('child-process-gone: ' + JSON.stringify(details))
+  })
+
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
 
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
-  } else {
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
-  }
+  if (VITE_DEV_SERVER_URL) win.loadURL(VITE_DEV_SERVER_URL)
+  else win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 }
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    appendLog('window-all-closed -> quit')
     app.quit()
     win = null
   }
 })
 
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
-  }
+  if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-// Main: wenn App ready ist -> in prod backend starten, danach Fenster erstellen
+// Main startup
 app.whenReady().then(async () => {
+  appendLog('app.whenReady')
   try {
     if (!VITE_DEV_SERVER_URL) {
-      // Produktion: starte gebündeltes Backend
       await startBundledBackend()
     } else {
-      // Dev: angenommen Backend läuft lokal (oder du willst es manuell starten)
-      console.log('Vite dev server active — skipping bundled backend start')
+      appendLog('Vite dev server active — skipping bundled backend start')
     }
-
     createWindow()
   } catch (err: any) {
-    console.error('Fehler beim Starten', err)
-    dialog.showErrorBox('Startfehler', 'Das Backend konnte nicht gestartet werden: ' + err?.message)
+    appendLog('Fehler beim Starten: ' + String(err))
+    try { dialog.showErrorBox('Startfehler', 'Das Backend konnte nicht gestartet werden: ' + err?.message) } catch {}
     app.quit()
   }
 })
+
+// Fallback: log App quits
+app.on('will-quit', () => appendLog('will-quit'))
+app.on('quit', () => appendLog('quit'))

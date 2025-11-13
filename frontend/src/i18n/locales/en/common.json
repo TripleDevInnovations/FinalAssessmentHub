@@ -97,7 +97,7 @@
             "ap2_economy": "Economics and Social Studies: Grade {{grade}} with {{points}} points.",
             "pw_project": "Company Project Work: Documentation: Grade {{grade}} with {{points}} points.",
             "pw_presentation": "Presentation: Grade {{grade}} with {{points}} points.",
-            "speak.pw_overall": "This results in the following outcome for the company project work: Grade {{grade}} with {{points}} points.",
+            "pw_overall": "This results in the following outcome for the company project work: Grade {{grade}} with {{points}} points.",
             "overall": "Your overall result is: Grade {{grade}} with {{points}} points."
         }
     },
