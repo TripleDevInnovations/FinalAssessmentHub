@@ -124,7 +124,7 @@ function startBundledBackend(): Promise<void> {
     const maxWait = 3000
     const start = Date.now()
     const tryConnect = () => {
-      const req = http.request({ hostname: '127.0.0.1', port: BACKEND_PORT, path: '/', method: 'GET', timeout: 400 }, res => {
+      const req = http.request({ hostname: '127.0.0.1', port: BACKEND_PORT, path: '/health', method: 'GET', timeout: 400 }, res => {
         appendLog('Backend healthcheck succeeded (status ' + res.statusCode + ')')
         req.destroy()
         resolve()
@@ -134,7 +134,6 @@ function startBundledBackend(): Promise<void> {
           setTimeout(tryConnect, 200)
         } else {
           appendLog('Backend did not become healthy within timeout — resolving anyway')
-          // Wir lösen trotzdem auf; Backend kann offline sein (z.B. dev mode)
           resolve()
         }
       })
@@ -227,12 +226,10 @@ function createWindow() {
     }
   })
 
-  // Renderer/Child crash handling — verhindert sofortiges quitten und loggt Details
   win.webContents.on('render-process-gone', (_event: Electron.Event, details: Electron.RenderProcessGoneDetails) => {
     appendLog('render-process-gone: ' + JSON.stringify(details))
     try {
       dialog.showErrorBox('Renderer abgestürzt', `Der Renderer-Prozess ist abgestürzt:\n${details.reason}`)
-      // Lade optional eine lokale Fallback-HTML, falls vorhanden
       const fallback = path.join(RENDERER_DIST, 'error.html')
       if (fs.existsSync(fallback)) {
         win?.loadFile(fallback).catch(e => appendLog('Loading fallback failed: ' + String(e)))
@@ -240,11 +237,8 @@ function createWindow() {
     } catch (e) { appendLog('Error handling render-process-gone: ' + String(e)) }
   })
 
-  // 'child-process-gone' ist in manchen electron-typedefs nicht deklariert -> cast auf any nur hier
   ;(win.webContents as any).on('child-process-gone', (_event: any, details: any) => {
-    // details enthält meist {type: 'gpu'|'renderer'|..., reason: 'crashed'|'killed'|..., exitCode?: number}
     appendLog('child-process-gone: ' + JSON.stringify(details))
-    // keine weitere Aktion nötig, wir loggen und könnten optional den Nutzer informieren
   })
 
   win.webContents.on('did-finish-load', () => {
