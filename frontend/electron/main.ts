@@ -18,7 +18,7 @@ app.disableHardwareAcceleration()
 crashReporter.start({
   productName: 'FinalAssessmentHub',
   companyName: 'DeinName',
-  uploadToServer: false, // nur lokal speichern
+  uploadToServer: false,
   compress: true
 })
 
