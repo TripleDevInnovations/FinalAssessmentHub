@@ -5,6 +5,38 @@ import os
 
 from backend.app.controller import exam_controller, root_controller
 
+LOG_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "()": "logging.Formatter",
+            "fmt": "%(levelname)s:     %(message)s",
+        },
+        "access": {
+            "()": "logging.Formatter",
+            "fmt": "%(levelname)s:     %(client_addr)s - \"%(request_line)s\" %(status_code)s",
+        },
+    },
+    "handlers": {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+    },
+    "loggers": {
+        "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
+        "uvicorn.error": {"level": "INFO"},
+        "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+    },
+}
+
 app = FastAPI()
 
 origins = [
@@ -30,4 +62,4 @@ app.include_router(root_controller.router, tags=["Root"])
 
 if __name__ == "__main__":
     port = int(os.getenv("BACKEND_PORT", 8000))
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    uvicorn.run(app, host="127.0.0.1", port=port, log_config=LOG_CONFIG)
