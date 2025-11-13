@@ -210,34 +210,61 @@ function waitForBackendReady(retries = 50, intervalMs = 200): Promise<void> {
   })
 }
 
-// --- Window / app lifecycle ---
+function getAssetPath(...paths: string[]) {
+  const rel = path.join(...paths);
+
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, rel);
+  } else {
+    return path.join(__dirname, '..', 'src', rel);
+  }
+}
+
 function createWindow() {
-  const iconPath = path.join(__dirname, '..', 'src', 'assets', 'logo_white.png')
-  const icon = nativeImage.createFromPath(iconPath)
+  const iconPath = getAssetPath('assets', 'logo_white.png');
+  const exists = fs.existsSync(iconPath);
+  if (!exists) {
+    console.warn('Icon nicht gefunden unter:', iconPath);
+  }
+
+  let icon = nativeImage.createFromPath(iconPath);
+  if (icon.isEmpty()) {
+    console.warn('nativeImage konnte Icon nicht laden (isEmpty):', iconPath);
+    icon = undefined as any;
+  }
+
+  if (process.platform === 'darwin' && icon && !icon.isEmpty()) {
+    try {
+      app.dock.setIcon(icon);
+    } catch (err) {
+      console.warn('app.dock.setIcon fehlgeschlagen:', err);
+    }
+  }
 
   win = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon,
+    icon: icon && !icon.isEmpty() ? icon : undefined,
     resizable: true,
     fullscreenable: true,
     maximizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     }
-  })
+  });
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
-  })
+    win?.webContents.send('main-process-message', (new Date).toLocaleString());
+  });
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    win.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
 }
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
