@@ -1,17 +1,3 @@
-/*
-  Erweiterte main.ts für Electron + eingebettetes PyInstaller-Backend
-  - Setzt Chromium-Switches sehr früh
-  - Deaktiviert Hardware-Acceleration
-  - Aktiviert CrashReporter (lokal)
-  - Globales Main-Logging (uncaught/unhandled)
-  - Robustere Backend-Start/Stop-Routinen mit Logging
-  - Fängt render-process-gone / child-process-gone ab und lädt Fallback-UI
-  - Debug-Flags kommentiert
-
-  ACHTUNG: Entferne `--no-sandbox` aus Release-Builds. Verwende `app.disableHardwareAcceleration()`
-  nur wenn nötig.
-*/
-
 import { app, BrowserWindow, nativeImage, dialog, crashReporter } from 'electron'
 import { fileURLToPath } from 'node:url'
 import * as path from 'path'
@@ -19,15 +5,12 @@ import * as fs from 'fs'
 import { spawn, ChildProcess } from 'child_process'
 import * as http from 'http'
 
-// --- Sehr frühe Chromium-Switches (möglichst vor allem anderen) ---
 app.commandLine.appendSwitch('disable-gpu')
 app.commandLine.appendSwitch('disable-gpu-compositing')
 app.commandLine.appendSwitch('disable-software-rasterizer')
 app.commandLine.appendSwitch('disable-accelerated-2d-canvas')
 app.commandLine.appendSwitch('disable-accelerated-video-decode')
-// app.commandLine.appendSwitch('no-sandbox') // NUR ZU DEBUG-ZWECKEN, NICHT FÜR RELEASE
 
-// Saubere Deaktivierung der Hardware-Acceleration
 app.disableHardwareAcceleration()
 
 // ----------------------------------------------------------------------------
@@ -45,11 +28,9 @@ const userDataPath = app.getPath ? app.getPath('userData') : path.join(process.c
 const logPath = path.join(userDataPath, 'finalassessment-main.log')
 function appendLog(msg: string) {
   try {
-    // Stelle sicher, dass Verzeichnis existiert
     fs.mkdirSync(path.dirname(logPath), { recursive: true })
     fs.appendFileSync(logPath, `${new Date().toISOString()} ${msg}\n`)
   } catch (e) {
-    // Logging nicht kritisch — swallow
     try { console.error('Logging failed', e) } catch {}
   }
 }
@@ -58,8 +39,6 @@ appendLog('=== App starting (early) ===')
 process.on('uncaughtException', (err) => appendLog('uncaughtException: ' + (err && (err.stack || err.message || String(err)))))
 process.on('unhandledRejection', (r) => appendLog('unhandledRejection: ' + String(r)))
 
-// ----------------------------------------------------------------------------
-// Konstanten / Pfade
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 process.env.APP_ROOT = path.join(__dirname, '..')
@@ -120,7 +99,6 @@ function startBundledBackend(): Promise<void> {
       } catch {}
     })
 
-    // Optional: einfacher Healthcheck — probiere kurz, ob Port erreichbar
     const maxWait = 3000
     const start = Date.now()
     const tryConnect = () => {
