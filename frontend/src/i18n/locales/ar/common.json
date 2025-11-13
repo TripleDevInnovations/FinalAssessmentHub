@@ -36,43 +36,45 @@
             }
         },
         "projectWork": {
-            "title": "عمل مشروع الشركة",
+            "title": "العمل على مشروع الشركة",
             "presentationLabel": "العرض التقديمي",
             "implementationLabel": "التخطيط والتنفيذ"
         },
         "helper": {
             "pointsRange": "0–100",
             "optional": "اختياري",
-            "extraDisabled": "معطل لأن اختبارًا إضافيًا آخر نشط"
+            "extraDisabled": "معطل لأن امتحانًا إضافيًا آخر نشط"
         },
         "validation": {
             "nameRequired": "الاسم مطلوب.",
             "required": "مطلوب",
-            "valueBetween": "يجب أن تكون القيمة بين 0 و 100"
+            "valueBetween": "يجب أن تكون القيمة بين 0 و100"
         },
         "snackbar": {
-            "validationError": "يرجى تصحيح الأخطاء قبل الإرسال.",
+            "validationError": "يرجى إصلاح الأخطاء قبل الإرسال.",
             "saveSuccess": "تم الحفظ بنجاح.",
+            "updateSuccess": "تم التحديث بنجاح.",
             "serverError": "خطأ في الخادم: {{error}}",
             "networkError": "خطأ في الشبكة: {{error}}"
         },
         "edit": {
-            "title": "تعديل النتيجة"
+            "title": "تعديل النتيجة",
+            "subtitle": "قم بتعديل نتائج الامتحان."
         }
     },
     "results": {
-        "confirm_delete_entry": "هل تريد حذف الإدخال حقًا؟",
+        "confirm_delete_entry": "هل تريد حقًا حذف الإدخال؟",
         "entry_deleted": "تم حذف الإدخال",
         "error_prefix": "خطأ",
         "entries_count": "الإدخالات ({{count}})",
         "loading_entries": "جاري تحميل الإدخالات…",
         "no_entries_yet": "لا توجد إدخالات بعد.",
-        "select_entry_prompt": "اختر إدخالًا من القائمة لعرض التفاصيل.",
+        "select_entry_prompt": "اختر إدخالاً من القائمة لعرض التفاصيل.",
         "open_menu_aria": "فتح القائمة",
         "delete_aria": "حذف",
         "exam_1": "الامتحان النهائي 1",
         "points": "النقاط",
-        "project_work": "عمل مشروع الشركة",
+        "project_work": "العمل على مشروع الشركة",
         "presentation": "العرض التقديمي",
         "documentation": "التوثيق",
         "exam_2": "الامتحان النهائي 2",
@@ -89,29 +91,29 @@
         "failed": "راسب",
         "project_work_overall": "الإجمالي",
         "speak": {
-            "ap1": "الامتحان النهائي الجزء 1: الدرجة {{grade}} مع {{points}} نقطة.",
-            "ap2_planning": "الامتحان النهائي الجزء 2: تخطيط منتج برمجي: الدرجة {{grade}} مع {{points}} نقطة.",
-            "ap2_development": "التطوير والتنفيذ: الدرجة {{grade}} مع {{points}} نقطة.",
-            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: الدرجة {{grade}} مع {{points}} نقطة.",
-            "pw_project": "عمل مشروع الشركة: التوثيق: الدرجة {{grade}} مع {{points}} نقطة.",
-            "pw_presentation": "العرض التقديمي: الدرجة {{grade}} مع {{points}} نقطة.",
-            "speak.pw_overall": "ينتج عن ذلك النتيجة التالية لعمل مشروع الشركة: الدرجة {{grade}} مع {{points}} نقطة.",
-            "overall": "النتيجة الإجمالية الخاصة بك هي: الدرجة {{grade}} مع {{points}} نقطة."
+            "ap1": "الامتحان النهائي الجزء 1: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "ap2_planning": "الامتحان النهائي الجزء 2: تخطيط منتج برمجي: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "ap2_development": "التطوير والتنفيذ: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "pw_project": "العمل على مشروع الشركة: التوثيق: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "pw_presentation": "العرض التقديمي: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "speak.pw_overall": "ينتج عن ذلك النتيجة التالية لمشروع الشركة: الدرجة {{grade}} بعدد {{points}} نقطة.",
+            "overall": "نتيجتك الإجمالية هي: الدرجة {{grade}} بعدد {{points}} نقطة."
         }
     },
     "settings": {
         "title": "تطبيقي الصغير",
         "home_welcome": "مرحبًا بك في الصفحة الرئيسية",
         "language": "اللغة",
-        "contact_text": "تواصل معنا.",
+        "contact_text": "اتصل بنا.",
         "settings_text": "الإعدادات",
         "change_language": "تغيير اللغة",
         "settings_change_language_note": "اختر لغة العرض (لن يتم حفظها).",
         "appearance": "المظهر",
-        "dark_mode": "غامق",
+        "dark_mode": "داكن",
         "light_mode": "فاتح",
         "toggle_theme_button": "تبديل المظهر",
-        "note_no_persist": "لن يتم حفظ اختيارك؛ سيتم استخدام اللغة الافتراضية عند إعادة التحميل."
+        "note_no_persist": "لن يتم حفظ الاختيار؛ ستُستخدم اللغة الافتراضية عند إعادة التحميل."
     },
     "about": {}
 }

@@ -10,9 +10,10 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
-  Grid,
   Box,
 } from "@mui/material";
+// @ts-ignore
+import Grid from '@mui/material/GridLegacy';
 import DeleteIcon from "@mui/icons-material/Delete";
 import MenuIcon from "@mui/icons-material/Menu";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -299,9 +300,9 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
         </Alert>
       )}
 
-      <Grid container spacing={4}>
+      <Grid container>
         {/* AP1 */}
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={4} sx={{ p: { xs: 1, sm: 2 } }}>
           <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
             <SectionHeader
               title={t("results.exam_1") ?? "Abschlussprüfung — Teil 1"}
@@ -315,7 +316,7 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
           </Card>
         </Grid>
         {/* AP2 & PW */}
-        <Grid item xs={12} sm={6} md={8}>
+        <Grid item xs={12} sm={6} md={8} sx={{ p: { xs: 1, sm: 2 } }}>
           <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
             <SectionHeader
               title={t("results.exam_2") ?? "Abschlussprüfung — Teil 2"}

@@ -53,11 +53,13 @@
         "snackbar": {
             "validationError": "Bitte Fehler vor dem Absenden beheben.",
             "saveSuccess": "Erfolgreich gespeichert.",
+            "updateSuccess": "Erfolgreich aktualisiert.",
             "serverError": "Serverfehler: {{error}}",
             "networkError": "Netzwerkfehler: {{error}}"
         },
         "edit": {
-            "title": "Ergebnis bearbeiten"
+            "title": "Ergebnis bearbeiten",
+            "subtitle": "Bearbeite die Prüfungsergebnisse."
         }
     },
     "results": {
@@ -95,7 +97,7 @@
             "ap2_economy": "Wirtschafts- und Sozialkunde: Notee {{grade}} mit {{points}} Punkten.",
             "pw_project": "Betriebliche Projektarbeit: Dokumentation: Notee {{grade}} mit {{points}} Punkten.",
             "pw_presentation": "Präsentation: Notee {{grade}} mit {{points}} Punkten.",
-            "speak.pw_overall":"Daraus Ergibt sich folgendes Ergebnis für die betirebliche Projektarbeit: Notee {{grade}} mit {{points}} Punkten.",
+            "speak.pw_overall": "Daraus Ergibt sich folgendes Ergebnis für die betirebliche Projektarbeit: Notee {{grade}} mit {{points}} Punkten.",
             "overall": "Dein Gesamtergebnis ist: Notee {{grade}} mit {{points}} Punkten."
         }
     },
