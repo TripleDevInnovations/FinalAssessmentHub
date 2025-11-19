@@ -13,14 +13,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import { useTranslation } from 'react-i18next';
 
-declare global {
-  interface Window {
-    electronAPI: {
-      getAppVersion: () => Promise<string>;
-    };
-  }
-}
-
 const InformationPage: React.FC = () => {
   const { t } = useTranslation();
   const repoUrl = 'https://github.com/TripleDevInnovations/FinalAssessmentHub';

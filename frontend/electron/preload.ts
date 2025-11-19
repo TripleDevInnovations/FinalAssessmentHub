@@ -20,5 +20,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 })
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getAppVersion: () => ipcRenderer.invoke('getAppVersion')
+  getAppVersion: () => ipcRenderer.invoke('getAppVersion'),
+  setTheme: (mode: 'light' | 'dark') => ipcRenderer.invoke('theme:set', mode),
+  getInitialTheme: () => ipcRenderer.invoke('theme:get')
 });

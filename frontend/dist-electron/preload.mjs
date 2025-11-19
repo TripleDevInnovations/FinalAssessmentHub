@@ -19,5 +19,7 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   }
 });
 electron.contextBridge.exposeInMainWorld("electronAPI", {
-  getAppVersion: () => electron.ipcRenderer.invoke("getAppVersion")
+  getAppVersion: () => electron.ipcRenderer.invoke("getAppVersion"),
+  setTheme: (mode) => electron.ipcRenderer.invoke("theme:set", mode),
+  getInitialTheme: () => electron.ipcRenderer.invoke("theme:get")
 });

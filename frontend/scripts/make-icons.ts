@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SRC = path.join(__dirname, '..', 'src', 'assets', 'logo_white.png');
+const SRC = path.join(__dirname, '..', 'src', 'assets', 'logo_blue.png');
 const OUT_DIR = path.join(__dirname, '..', 'build');
 
 if (!fs.existsSync(SRC)) {

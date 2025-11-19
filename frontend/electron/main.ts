@@ -1,17 +1,9 @@
-import { app, ipcMain, BrowserWindow, nativeImage, dialog, crashReporter } from 'electron'
+import { app, ipcMain, BrowserWindow, nativeImage, dialog, crashReporter, nativeTheme } from 'electron'
 import { fileURLToPath } from 'node:url'
 import * as path from 'path'
 import * as fs from 'fs'
 import { spawn, ChildProcess } from 'child_process'
 import * as http from 'http'
-
-app.commandLine.appendSwitch('disable-gpu')
-app.commandLine.appendSwitch('disable-gpu-compositing')
-app.commandLine.appendSwitch('disable-software-rasterizer')
-app.commandLine.appendSwitch('disable-accelerated-2d-canvas')
-app.commandLine.appendSwitch('disable-accelerated-video-decode')
-
-app.disableHardwareAcceleration()
 
 ipcMain.handle('getAppVersion', () => {
   return app.getVersion();
@@ -188,7 +180,16 @@ function getAssetPath(...paths: string[]) {
 let win: BrowserWindow | null = null
 
 function createWindow() {
-  const iconPath = getAssetPath('assets', 'logo_white.png')
+  ipcMain.handle('theme:set', (_event, mode: 'light' | 'dark') => {
+    nativeTheme.themeSource = mode;
+  });
+
+  ipcMain.handle('theme:get', () => {
+    return nativeTheme.shouldUseDarkColors; // Gibt true oder false zurück
+  });
+
+
+  const iconPath = getAssetPath('assets', 'logo_blue.png')
   if (!fs.existsSync(iconPath)) appendLog('Icon nicht gefunden unter: ' + iconPath)
   let icon = nativeImage.createFromPath(iconPath)
   if (icon.isEmpty && icon.isEmpty()) appendLog('nativeImage konnte Icon nicht laden (isEmpty): ' + iconPath)
