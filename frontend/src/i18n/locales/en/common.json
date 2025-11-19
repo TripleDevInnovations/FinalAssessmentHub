@@ -90,6 +90,8 @@
         "passed": "Passed",
         "failed": "Failed",
         "project_work_overall": "Overall",
+        "read_aloud_aria": "Read result aloud",
+        "stop_read_aloud_aria": "Stop reading aloud",
         "speak": {
             "ap1": "Final Exam Part 1: Grade {{grade}} with {{points}} points.",
             "ap2_planning": "Final Exam Part 2: Planning a Software Product: Grade {{grade}} with {{points}} points.",

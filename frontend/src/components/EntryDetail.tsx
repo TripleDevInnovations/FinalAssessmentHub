@@ -115,9 +115,9 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
         {t("results.calculate_button")}
       </Button>
       {calculation && (
-        <Tooltip title={isSpeaking ? t("results.stop_read_aloud_aria", "Vorlesen stoppen") : t("results.read_aloud_aria", "Ergebnis vorlesen")}>
+        <Tooltip title={isSpeaking ? t("results.stop_read_aloud_aria") : t("results.read_aloud_aria")}>
           <IconButton
-            aria-label={isSpeaking ? t("results.stop_read_aloud_aria", "Vorlesen stoppen") : t("results.read_aloud_aria", "Ergebnis vorlesen")}
+            aria-label={isSpeaking ? t("results.stop_read_aloud_aria") : t("results.read_aloud_aria")}
             onClick={onReadAloud}
           >
             {isSpeaking ? <StopIcon /> : <VolumeUpIcon />}

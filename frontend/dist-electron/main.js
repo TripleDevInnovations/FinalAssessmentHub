@@ -1,222 +1,274 @@
-import { app as o, crashReporter as B, BrowserWindow as P, dialog as k, nativeImage as D } from "electron";
-import { fileURLToPath as _ } from "node:url";
-import * as a from "path";
-import * as h from "fs";
-import { spawn as v } from "child_process";
-import * as R from "http";
-o.commandLine.appendSwitch("disable-gpu");
-o.commandLine.appendSwitch("disable-gpu-compositing");
-o.commandLine.appendSwitch("disable-software-rasterizer");
-o.commandLine.appendSwitch("disable-accelerated-2d-canvas");
-o.commandLine.appendSwitch("disable-accelerated-video-decode");
-o.disableHardwareAcceleration();
-B.start({
+import { app, crashReporter, BrowserWindow, dialog, nativeImage } from "electron";
+import { fileURLToPath } from "node:url";
+import * as path from "path";
+import * as fs from "fs";
+import { spawn } from "child_process";
+import * as http from "http";
+app.commandLine.appendSwitch("disable-gpu");
+app.commandLine.appendSwitch("disable-gpu-compositing");
+app.commandLine.appendSwitch("disable-software-rasterizer");
+app.commandLine.appendSwitch("disable-accelerated-2d-canvas");
+app.commandLine.appendSwitch("disable-accelerated-video-decode");
+app.disableHardwareAcceleration();
+crashReporter.start({
   productName: "FinalAssessmentHub",
   companyName: "DeinName",
-  uploadToServer: !1,
-  // nur lokal speichern
-  compress: !0
+  uploadToServer: false,
+  compress: true
 });
-const x = o.getPath ? o.getPath("userData") : a.join(process.cwd(), ".userdata"), I = a.join(x, "finalassessment-main.log");
-function e(t) {
+const userDataPath = app.getPath ? app.getPath("userData") : path.join(process.cwd(), ".userdata");
+const logPath = path.join(userDataPath, "finalassessment-main.log");
+function appendLog(msg) {
   try {
-    h.mkdirSync(a.dirname(I), { recursive: !0 }), h.appendFileSync(I, `${(/* @__PURE__ */ new Date()).toISOString()} ${t}
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+    fs.appendFileSync(logPath, `${(/* @__PURE__ */ new Date()).toISOString()} ${msg}
 `);
-  } catch (n) {
+  } catch (e) {
     try {
-      console.error("Logging failed", n);
+      console.error("Logging failed", e);
     } catch {
     }
   }
 }
-e("=== App starting (early) ===");
-process.on("uncaughtException", (t) => e("uncaughtException: " + (t && (t.stack || t.message || String(t)))));
-process.on("unhandledRejection", (t) => e("unhandledRejection: " + String(t)));
-const y = a.dirname(_(import.meta.url));
-process.env.APP_ROOT = a.join(y, "..");
-const f = process.env.VITE_DEV_SERVER_URL, G = a.join(process.env.APP_ROOT, "dist-electron"), w = a.join(process.env.APP_ROOT, "dist");
-process.env.VITE_PUBLIC = f ? a.join(process.env.APP_ROOT, "public") : w;
-const S = Number(process.env.BACKEND_PORT ?? 8e3);
-let p = null;
-function L() {
-  const t = process.platform === "win32" ? "backend.exe" : "backend";
-  return a.join(process.resourcesPath || process.cwd(), "backend", t);
+appendLog("=== App starting (early) ===");
+process.on("uncaughtException", (err) => appendLog("uncaughtException: " + (err && (err.stack || err.message || String(err)))));
+process.on("unhandledRejection", (r) => appendLog("unhandledRejection: " + String(r)));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+process.env.APP_ROOT = path.join(__dirname, "..");
+const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
+const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
+const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
+const BACKEND_PORT = Number(process.env.BACKEND_PORT ?? 8e3);
+let backendProcess = null;
+function getBundledBackendPath() {
+  const exeName = process.platform === "win32" ? "backend.exe" : "backend";
+  return path.join(process.resourcesPath || process.cwd(), "backend", exeName);
 }
-function A(t) {
-  if (process.platform !== "win32")
+function makeExecutableIfNeeded(p) {
+  if (process.platform !== "win32") {
     try {
-      h.chmodSync(t, 493);
-    } catch (n) {
-      e("chmod failed: " + String(n));
+      fs.chmodSync(p, 493);
+    } catch (err) {
+      appendLog("chmod failed: " + String(err));
     }
+  }
 }
-function O() {
-  return new Promise((t, n) => {
-    var u, E;
-    const c = L();
-    if (e("Attempt to start bundled backend at " + c), !h.existsSync(c))
-      return e("Backend binary not found at " + c), n(new Error(`Backend binary not found at ${c}`));
-    A(c);
-    const r = process.platform !== "win32";
-    p = v(c, [], {
-      detached: r,
+function startBundledBackend() {
+  return new Promise((resolve, reject) => {
+    var _a, _b;
+    const exePath = getBundledBackendPath();
+    appendLog("Attempt to start bundled backend at " + exePath);
+    if (!fs.existsSync(exePath)) {
+      appendLog("Backend binary not found at " + exePath);
+      return reject(new Error(`Backend binary not found at ${exePath}`));
+    }
+    makeExecutableIfNeeded(exePath);
+    const useDetached = process.platform !== "win32";
+    backendProcess = spawn(exePath, [], {
+      detached: useDetached,
       stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, BACKEND_PORT: String(S) }
-    }), (u = p.stdout) == null || u.on("data", (d) => {
-      const l = d.toString();
-      e("[backend stdout] " + l.replace(/\r?\n/g, "\\n"));
+      env: { ...process.env, BACKEND_PORT: String(BACKEND_PORT) }
+    });
+    (_a = backendProcess.stdout) == null ? void 0 : _a.on("data", (d) => {
+      const s = d.toString();
+      appendLog("[backend stdout] " + s.replace(/\r?\n/g, "\\n"));
       try {
-        console.log("[backend stdout]", l);
-      } catch {
-      }
-    }), (E = p.stderr) == null || E.on("data", (d) => {
-      const l = d.toString();
-      e("[backend stderr] " + l.replace(/\r?\n/g, "\\n"));
-      try {
-        console.error("[backend stderr]", l);
-      } catch {
-      }
-    }), p.on("exit", (d, l) => {
-      e(`Backend exited: code=${d} signal=${l}`), p = null;
-      try {
-        k.showErrorBox("Backend beendet", "Das lokale Backend wurde beendet. Die Anwendung kann nicht korrekt funktionieren.");
+        console.log("[backend stdout]", s);
       } catch {
       }
     });
-    const s = 3e3, m = Date.now(), g = () => {
-      const d = R.request({ hostname: "127.0.0.1", port: S, path: "/", method: "GET", timeout: 400 }, (l) => {
-        e("Backend healthcheck succeeded (status " + l.statusCode + ")"), d.destroy(), t();
+    (_b = backendProcess.stderr) == null ? void 0 : _b.on("data", (d) => {
+      const s = d.toString();
+      appendLog("[backend stderr] " + s.replace(/\r?\n/g, "\\n"));
+      try {
+        console.error("[backend stderr]", s);
+      } catch {
+      }
+    });
+    backendProcess.on("exit", (code, signal) => {
+      appendLog(`Backend exited: code=${code} signal=${signal}`);
+      backendProcess = null;
+      try {
+        dialog.showErrorBox("Backend beendet", "Das lokale Backend wurde beendet. Die Anwendung kann nicht korrekt funktionieren.");
+      } catch {
+      }
+    });
+    const maxWait = 3e3;
+    const start = Date.now();
+    const tryConnect = () => {
+      const req = http.request({ hostname: "127.0.0.1", port: BACKEND_PORT, path: "/health", method: "GET", timeout: 400 }, (res) => {
+        appendLog("Backend healthcheck succeeded (status " + res.statusCode + ")");
+        req.destroy();
+        resolve();
       });
-      d.on("error", () => {
-        Date.now() - m < s ? setTimeout(g, 200) : (e("Backend did not become healthy within timeout — resolving anyway"), t());
-      }), d.end();
+      req.on("error", () => {
+        if (Date.now() - start < maxWait) {
+          setTimeout(tryConnect, 200);
+        } else {
+          appendLog("Backend did not become healthy within timeout — resolving anyway");
+          resolve();
+        }
+      });
+      req.end();
     };
-    g();
+    tryConnect();
   });
 }
-function b() {
-  var n, c;
+function stopBundledBackendSync() {
+  var _a, _b;
   try {
-    const r = R.request(
-      { hostname: "127.0.0.1", port: S, path: "/shutdown", method: "POST", timeout: 500 },
-      (s) => {
-        e("Shutdown endpoint called, status:" + s.statusCode);
+    const req = http.request(
+      { hostname: "127.0.0.1", port: BACKEND_PORT, path: "/shutdown", method: "POST", timeout: 500 },
+      (res) => {
+        appendLog("Shutdown endpoint called, status:" + res.statusCode);
       }
     );
-    r.on("error", (s) => e("Shutdown request failed: " + s.message)), r.end();
-  } catch (r) {
-    e("Could not call shutdown endpoint: " + String(r));
+    req.on("error", (err) => appendLog("Shutdown request failed: " + err.message));
+    req.end();
+  } catch (e) {
+    appendLog("Could not call shutdown endpoint: " + String(e));
   }
-  if (!p || !p.pid) return;
-  const t = p.pid;
-  e(`Stopping backend pid=${t} platform=${process.platform}`);
+  if (!backendProcess || !backendProcess.pid) return;
+  const pid = backendProcess.pid;
+  appendLog(`Stopping backend pid=${pid} platform=${process.platform}`);
   try {
     if (process.platform === "win32") {
-      const { spawnSync: r } = require("child_process"), s = r("taskkill", ["/PID", String(t), "/T", "/F"]);
-      s.error ? e("taskkill failed: " + String(s.error)) : e("taskkill stdout: " + (((n = s.stdout) == null ? void 0 : n.toString()) || "") + " stderr: " + (((c = s.stderr) == null ? void 0 : c.toString()) || ""));
+      const { spawnSync } = require("child_process");
+      const res = spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"]);
+      if (res.error) appendLog("taskkill failed: " + String(res.error));
+      else appendLog("taskkill stdout: " + (((_a = res.stdout) == null ? void 0 : _a.toString()) || "") + " stderr: " + (((_b = res.stderr) == null ? void 0 : _b.toString()) || ""));
     } else {
       try {
-        process.kill(-t, "SIGTERM");
-      } catch (u) {
-        e("SIGTERM to process group failed: " + String(u));
+        process.kill(-pid, "SIGTERM");
+      } catch (e) {
+        appendLog("SIGTERM to process group failed: " + String(e));
       }
-      const r = 2e3, s = 50, m = Date.now();
-      let g = !1;
-      for (; Date.now() - m < r; )
+      const TIMEOUT_MS = 2e3;
+      const POLL_MS = 50;
+      const start = Date.now();
+      let gracefullyExited = false;
+      while (Date.now() - start < TIMEOUT_MS) {
         try {
-          process.kill(t, 0), Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, s);
-        } catch {
-          g = !0;
+          process.kill(pid, 0);
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, POLL_MS);
+        } catch (err) {
+          gracefullyExited = true;
           break;
         }
-      if (!g) {
-        e("Backend did not exit gracefully, sending SIGKILL.");
+      }
+      if (!gracefullyExited) {
+        appendLog("Backend did not exit gracefully, sending SIGKILL.");
         try {
-          process.kill(-t, "SIGKILL");
-        } catch (u) {
-          e("SIGKILL failed: " + String(u));
+          process.kill(-pid, "SIGKILL");
+        } catch (e) {
+          appendLog("SIGKILL failed: " + String(e));
         }
       }
     }
-  } catch (r) {
-    e("Error stopping backend: " + String(r));
+  } catch (err) {
+    appendLog("Error stopping backend: " + String(err));
   } finally {
-    p = null;
+    backendProcess = null;
   }
 }
-o.on("before-quit", () => {
-  e("before-quit called"), b();
+app.on("before-quit", () => {
+  appendLog("before-quit called");
+  stopBundledBackendSync();
 });
 process.on("SIGINT", () => {
-  e("SIGINT"), b(), process.exit(0);
+  appendLog("SIGINT");
+  stopBundledBackendSync();
+  process.exit(0);
 });
 process.on("SIGTERM", () => {
-  e("SIGTERM"), b(), process.exit(0);
+  appendLog("SIGTERM");
+  stopBundledBackendSync();
+  process.exit(0);
 });
-function j(...t) {
-  const n = a.join(...t);
-  return o.isPackaged ? a.join(process.resourcesPath || process.cwd(), n) : a.join(y, "..", "src", n);
+function getAssetPath(...paths) {
+  const rel = path.join(...paths);
+  if (app.isPackaged) return path.join(process.resourcesPath || process.cwd(), rel);
+  else return path.join(__dirname, "..", "src", rel);
 }
-let i = null;
-function T() {
-  const t = j("assets", "logo_white.png");
-  h.existsSync(t) || e("Icon nicht gefunden unter: " + t);
-  let n = D.createFromPath(t);
-  if (n.isEmpty && n.isEmpty() && e("nativeImage konnte Icon nicht laden (isEmpty): " + t), process.platform === "darwin" && n && !n.isEmpty())
+let win = null;
+function createWindow() {
+  const iconPath = getAssetPath("assets", "logo_white.png");
+  if (!fs.existsSync(iconPath)) appendLog("Icon nicht gefunden unter: " + iconPath);
+  let icon = nativeImage.createFromPath(iconPath);
+  if (icon.isEmpty && icon.isEmpty()) appendLog("nativeImage konnte Icon nicht laden (isEmpty): " + iconPath);
+  if (process.platform === "darwin" && icon && !icon.isEmpty()) {
     try {
-      o.dock.setIcon(n);
-    } catch (c) {
-      e("app.dock.setIcon fehlgeschlagen: " + String(c));
+      app.dock.setIcon(icon);
+    } catch (err) {
+      appendLog("app.dock.setIcon fehlgeschlagen: " + String(err));
     }
-  i = new P({
+  }
+  win = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: n && !n.isEmpty() ? n : void 0,
-    resizable: !0,
-    fullscreenable: !0,
-    maximizable: !0,
+    icon: icon && !icon.isEmpty() ? icon : void 0,
+    resizable: true,
+    fullscreenable: true,
+    maximizable: true,
     webPreferences: {
-      preload: a.join(y, "preload.mjs")
+      preload: path.join(__dirname, "preload.mjs")
     }
-  }), i.webContents.on("render-process-gone", (c, r) => {
-    e("render-process-gone: " + JSON.stringify(r));
+  });
+  win.webContents.on("render-process-gone", (_event, details) => {
+    appendLog("render-process-gone: " + JSON.stringify(details));
     try {
-      k.showErrorBox("Renderer abgestürzt", `Der Renderer-Prozess ist abgestürzt:
-${r.reason}`);
-      const s = a.join(w, "error.html");
-      h.existsSync(s) && (i == null || i.loadFile(s).catch((m) => e("Loading fallback failed: " + String(m))));
-    } catch (s) {
-      e("Error handling render-process-gone: " + String(s));
+      dialog.showErrorBox("Renderer abgestürzt", `Der Renderer-Prozess ist abgestürzt:
+${details.reason}`);
+      const fallback = path.join(RENDERER_DIST, "error.html");
+      if (fs.existsSync(fallback)) {
+        win == null ? void 0 : win.loadFile(fallback).catch((e) => appendLog("Loading fallback failed: " + String(e)));
+      }
+    } catch (e) {
+      appendLog("Error handling render-process-gone: " + String(e));
     }
-  }), i.webContents.on("child-process-gone", (c, r) => {
-    e("child-process-gone: " + JSON.stringify(r));
-  }), i.webContents.on("did-finish-load", () => {
-    i == null || i.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
-  }), f ? i.loadURL(f) : i.loadFile(a.join(w, "index.html"));
+  });
+  win.webContents.on("child-process-gone", (_event, details) => {
+    appendLog("child-process-gone: " + JSON.stringify(details));
+  });
+  win.webContents.on("did-finish-load", () => {
+    win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
+  });
+  if (VITE_DEV_SERVER_URL) win.loadURL(VITE_DEV_SERVER_URL);
+  else win.loadFile(path.join(RENDERER_DIST, "index.html"));
 }
-o.on("window-all-closed", () => {
-  process.platform !== "darwin" && (e("window-all-closed -> quit"), o.quit(), i = null);
-});
-o.on("activate", () => {
-  P.getAllWindows().length === 0 && T();
-});
-o.whenReady().then(async () => {
-  e("app.whenReady");
-  try {
-    f ? e("Vite dev server active — skipping bundled backend start") : await O(), T();
-  } catch (t) {
-    e("Fehler beim Starten: " + String(t));
-    try {
-      k.showErrorBox("Startfehler", "Das Backend konnte nicht gestartet werden: " + (t == null ? void 0 : t.message));
-    } catch {
-    }
-    o.quit();
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    appendLog("window-all-closed -> quit");
+    app.quit();
+    win = null;
   }
 });
-o.on("will-quit", () => e("will-quit"));
-o.on("quit", () => e("quit"));
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+app.whenReady().then(async () => {
+  appendLog("app.whenReady");
+  try {
+    if (!VITE_DEV_SERVER_URL) {
+      await startBundledBackend();
+    } else {
+      appendLog("Vite dev server active — skipping bundled backend start");
+    }
+    createWindow();
+  } catch (err) {
+    appendLog("Fehler beim Starten: " + String(err));
+    try {
+      dialog.showErrorBox("Startfehler", "Das Backend konnte nicht gestartet werden: " + (err == null ? void 0 : err.message));
+    } catch {
+    }
+    app.quit();
+  }
+});
+app.on("will-quit", () => appendLog("will-quit"));
+app.on("quit", () => appendLog("quit"));
 export {
-  G as MAIN_DIST,
-  w as RENDERER_DIST,
-  f as VITE_DEV_SERVER_URL
+  MAIN_DIST,
+  RENDERER_DIST,
+  VITE_DEV_SERVER_URL
 };

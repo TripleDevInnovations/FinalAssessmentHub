@@ -90,6 +90,8 @@
         "passed": "Bestanden",
         "failed": "Durchgefallen",
         "project_work_overall": "Gesamt",
+        "read_aloud_aria": "Ergebnis vorlesen",
+        "stop_read_aloud_aria": "Vorlesen stoppen",
         "speak": {
             "ap1": "Abschlussprüfung Teil 1: Notee {{grade}} mit {{points}} Punkten.",
             "ap2_planning": "Abschlussprüfung Teil 2: Planen eines Softwareproduktes: Notee {{grade}} mit {{points}} Punkten.",
