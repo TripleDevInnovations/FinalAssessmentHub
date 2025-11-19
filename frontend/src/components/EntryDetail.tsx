@@ -104,12 +104,12 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
         onClick={onCalculate}
         disabled={
           isCalculating ||
-          !entry.ap1 ||
-          !entry.ap2?.planning?.main ||
-          !entry.ap2?.development?.main ||
-          !entry.ap2?.economy?.main ||
-          !entry.ap2?.pw?.presentation ||
-          !entry.ap2?.pw?.project
+          entry.ap1 == null ||
+          entry.ap2?.planning?.main == null ||
+          entry.ap2?.development?.main == null ||
+          entry.ap2?.economy?.main == null ||
+          entry.ap2?.pw?.presentation == null ||
+          entry.ap2?.pw?.project == null
         }
       >
         {t("results.calculate_button")}
