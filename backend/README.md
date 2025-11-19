@@ -84,6 +84,12 @@ backend/
 
 ---
 
+## build .exe
+
+```bash
+pyinstaller --onefile --noconsole backend/main.py
+```
+
 ## Tests
 
 ```bash

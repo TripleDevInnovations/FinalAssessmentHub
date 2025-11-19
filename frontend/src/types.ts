@@ -45,7 +45,11 @@ export interface CalculationResult {
       presentation: GradeAndPoints;
       overall: GradeAndPoints;
     };
+    overall: GradeAndPoints;
   }
   Overall: GradeAndPoints;
-  Passed: boolean
+  Status: {
+    passed: boolean;
+    reasons: Array<String>;
+  };
 }

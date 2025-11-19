@@ -10,7 +10,7 @@
     },
     "add": {
         "title": "Enter Exam Results",
-        "subtitle": "Enter nickname and scores (0–100) and click Submit.",
+        "subtitle": "Enter the nickname and scores (0-100) and click submit.",
         "nicknameLabel": "Nickname",
         "submitButton": "Submit",
         "resetButton": "Reset",
@@ -41,9 +41,9 @@
             "implementationLabel": "Planning and Implementation"
         },
         "helper": {
-            "pointsRange": "0–100",
+            "pointsRange": "0-100",
             "optional": "Optional",
-            "extraDisabled": "Disabled because another additional exam is active"
+            "extraDisabled": "Disabled because another supplementary exam is active"
         },
         "validation": {
             "nameRequired": "Name is required.",
@@ -52,9 +52,9 @@
             "nameTooLong": "Maximum length: {{maxLength}} characters"
         },
         "snackbar": {
-            "validationError": "Please fix the errors before submitting.",
-            "saveSuccess": "Saved successfully.",
-            "updateSuccess": "Updated successfully.",
+            "validationError": "Please fix errors before submitting.",
+            "saveSuccess": "Successfully saved.",
+            "updateSuccess": "Successfully updated.",
             "serverError": "Server error: {{error}}",
             "networkError": "Network error: {{error}}"
         },
@@ -68,11 +68,11 @@
         "entry_deleted": "Entry deleted",
         "error_prefix": "Error",
         "entries_count": "Entries ({{count}})",
-        "loading_entries": "Loading entries…",
+        "loading_entries": "Loading entries...",
         "no_entries_yet": "No entries yet.",
         "select_entry_prompt": "Select an entry from the list to view details.",
         "open_menu_aria": "Open menu",
-        "delete_aria": "Delete",
+        "delete_aria": "delete",
         "exam_1": "Final Exam 1",
         "points": "Points",
         "project_work": "Company Project Work",
@@ -80,6 +80,7 @@
         "documentation": "Documentation",
         "exam_2": "Final Exam 2",
         "exam2_subtitle": "Written",
+        "exam_2_overall": "Final Exam 2 Overall",
         "plan_software_product": "Planning a Software Product",
         "development_and_implementation": "Development and Implementation",
         "economics_and_social_studies": "Economics and Social Studies",
@@ -93,6 +94,13 @@
         "project_work_overall": "Overall",
         "read_aloud_aria": "Read result aloud",
         "stop_read_aloud_aria": "Stop reading aloud",
+        "reasons": {
+            "text": "Reasons",
+            "OVERALL_BELOW_50_POINTS": "In the overall result of Part 1 and Part 2, at least 'sufficient'",
+            "AP2_OVERALL_BELOW_50_POINTS": "In the result of Part 2, at least 'sufficient'",
+            "TOO_MANY_COMPONENTS_BELOW_50_POINTS": "In at least three exam areas of Part 2, at least 'sufficient'",
+            "COMPONENT_BELOW_30_POINTS": "In no exam area of Part 2, 'insufficient'"
+        },
         "speak": {
             "ap1": "Final Exam Part 1: Grade {{grade}} with {{points}} points.",
             "ap2_planning": "Final Exam Part 2: Planning a Software Product: Grade {{grade}} with {{points}} points.",
@@ -100,34 +108,35 @@
             "ap2_economy": "Economics and Social Studies: Grade {{grade}} with {{points}} points.",
             "pw_project": "Company Project Work: Documentation: Grade {{grade}} with {{points}} points.",
             "pw_presentation": "Presentation: Grade {{grade}} with {{points}} points.",
-            "pw_overall": "This results in the following outcome for the company project work: Grade {{grade}} with {{points}} points.",
+            "pw_overall": "This results in the following grade for the company project work: Grade {{grade}} with {{points}} points.",
+            "ap2_overall": "In Final Exam Part 2, this results in Grade {{grade}} with {{points}} points.",
             "overall": "Your overall result is: Grade {{grade}} with {{points}} points."
         }
     },
     "settings": {
-        "title": "My Little App",
-        "home_welcome": "Welcome to the Home Page",
+        "title": "My Small App",
+        "home_welcome": "Welcome to the homepage",
         "language": "Language",
         "contact_text": "Contact us.",
         "settings_text": "Settings",
         "change_language": "Change Language",
-        "settings_change_language_note": "Select the display language (not saved).",
+        "settings_change_language_note": "Choose the display language (not saved).",
         "appearance": "Appearance",
         "dark_mode": "Dark",
         "light_mode": "Light",
-        "toggle_theme_button": "Toggle Appearance",
-        "note_no_persist": "The selection is not saved; the default language will be used on reload."
+        "toggle_theme_button": "Change Appearance",
+        "note_no_persist": "The selection is not saved; the default language will be used upon reload."
     },
     "about": {
         "title": "About the App",
         "version": "Version",
         "loading": "loading...",
-        "madeBy": "Created by",
+        "madeBy": "Made by",
         "productOwner": "Product Owner",
         "projectInfo": "Project Information",
-        "projectDescription": "A school project of <strong>{{school}}</strong>\n Supervising teacher: {{teacher}}",
+        "projectDescription": "A school project of <strong>{{school}}</strong> \n Supervising teacher: {{teacher}}",
         "githubRepo": "GitHub Repository",
-        "copyLink": "Copy link",
+        "copyLink": "Copy Link",
         "copied": "Copied!"
     }
 }

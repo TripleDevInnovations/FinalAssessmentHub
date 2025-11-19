@@ -2,15 +2,15 @@
     "topbar": {
         "title": "مركز التقييم النهائي",
         "logoAlt": "الشعار",
-        "mainMenu": "علامات تبويب القائمة الرئيسية",
+        "mainMenu": "أقسام القائمة الرئيسية",
         "add": "إضافة",
         "results": "النتائج",
         "settings": "الإعدادات",
         "info": "معلومات"
     },
     "add": {
-        "title": "إدخال نتائج الامتحان",
-        "subtitle": "أدخل الاسم المستعار والدرجات (0–100) ثم اضغط إرسال.",
+        "title": "أدخل نتائج الامتحان",
+        "subtitle": "أدخل الاسم المستعار والدرجات (0-100) واضغط على إرسال.",
         "nicknameLabel": "الاسم المستعار",
         "submitButton": "إرسال",
         "resetButton": "إعادة تعيين",
@@ -20,7 +20,7 @@
         },
         "ap2": {
             "planning": {
-                "title": "الامتحان النهائي 2 - تخطيط منتج برمجي",
+                "title": "الامتحان النهائي 2 - تخطيط منتج البرمجيات",
                 "mainLabel": "الجزء 2.1 (النقاط)",
                 "extraLabel": "الجزء 2.1 (MEPR)"
             },
@@ -36,23 +36,23 @@
             }
         },
         "projectWork": {
-            "title": "العمل على مشروع الشركة",
-            "presentationLabel": "العرض التقديمي",
+            "title": "مشروع العمل في الشركة",
+            "presentationLabel": "العرض",
             "implementationLabel": "التخطيط والتنفيذ"
         },
         "helper": {
-            "pointsRange": "0–100",
+            "pointsRange": "0-100",
             "optional": "اختياري",
-            "extraDisabled": "معطل لأن امتحانًا إضافيًا آخر نشط"
+            "extraDisabled": "مُعطّل لأن امتحان تكميلي آخر قيد التنفيذ"
         },
         "validation": {
             "nameRequired": "الاسم مطلوب.",
             "required": "مطلوب",
-            "valueBetween": "يجب أن تكون القيمة بين 0 و100",
-            "nameTooLong": "الطول الأقصى: {{maxLength}} حرف"
+            "valueBetween": "يجب أن تكون القيمة بين 0 و 100",
+            "nameTooLong": "الحد الأقصى للطول: {{maxLength}} حرفًا"
         },
         "snackbar": {
-            "validationError": "يرجى إصلاح الأخطاء قبل الإرسال.",
+            "validationError": "يرجى تصحيح الأخطاء قبل الإرسال.",
             "saveSuccess": "تم الحفظ بنجاح.",
             "updateSuccess": "تم التحديث بنجاح.",
             "serverError": "خطأ في الخادم: {{error}}",
@@ -60,52 +60,61 @@
         },
         "edit": {
             "title": "تعديل النتيجة",
-            "subtitle": "قم بتعديل نتائج الامتحان."
+            "subtitle": "تعديل نتائج الامتحان."
         }
     },
     "results": {
-        "confirm_delete_entry": "هل تريد حقًا حذف الإدخال؟",
+        "confirm_delete_entry": "هل أنت متأكد من حذف الإدخال؟",
         "entry_deleted": "تم حذف الإدخال",
         "error_prefix": "خطأ",
         "entries_count": "الإدخالات ({{count}})",
-        "loading_entries": "جاري تحميل الإدخالات…",
+        "loading_entries": "جاري تحميل الإدخالات...",
         "no_entries_yet": "لا توجد إدخالات بعد.",
-        "select_entry_prompt": "اختر إدخالاً من القائمة لعرض التفاصيل.",
-        "open_menu_aria": "فتح القائمة",
+        "select_entry_prompt": "حدد إدخالًا من القائمة لعرض التفاصيل.",
+        "open_menu_aria": "افتح القائمة",
         "delete_aria": "حذف",
         "exam_1": "الامتحان النهائي 1",
         "points": "النقاط",
-        "project_work": "العمل على مشروع الشركة",
-        "presentation": "العرض التقديمي",
+        "project_work": "مشروع العمل في الشركة",
+        "presentation": "العرض",
         "documentation": "التوثيق",
         "exam_2": "الامتحان النهائي 2",
         "exam2_subtitle": "كتابي",
-        "plan_software_product": "تخطيط منتج برمجي",
+        "exam_2_overall": "الامتحان النهائي 2 - المجموع",
+        "plan_software_product": "تخطيط منتج البرمجيات",
         "development_and_implementation": "التطوير والتنفيذ",
         "economics_and_social_studies": "الاقتصاد والدراسات الاجتماعية",
         "calculation_result": "نتيجة الحساب",
-        "overall": "النتيجة الإجمالية",
+        "overall": "النتيجة الكلية",
         "grade": "الدرجة",
         "calculate_button": "احسب",
         "calculated": "تم الحساب",
         "passed": "ناجح",
         "failed": "راسب",
-        "project_work_overall": "الإجمالي",
+        "project_work_overall": "النتيجة الكلية لمشروع العمل في الشركة",
         "read_aloud_aria": "قراءة النتيجة بصوت عالٍ",
         "stop_read_aloud_aria": "إيقاف القراءة بصوت عالٍ",
+        "reasons": {
+            "text": "الأسباب",
+            "OVERALL_BELOW_50_POINTS": "في النتيجة الكلية للجزء 1 والجزء 2، يجب أن تكون 'كافية' على الأقل",
+            "AP2_OVERALL_BELOW_50_POINTS": "في نتيجة الجزء 2، يجب أن تكون 'كافية' على الأقل",
+            "TOO_MANY_COMPONENTS_BELOW_50_POINTS": "في ثلاثة مجالات امتحان على الأقل في الجزء 2، يجب أن تكون 'كافية' على الأقل",
+            "COMPONENT_BELOW_30_POINTS": "في أي مجال امتحان من الجزء 2، لا يجب أن تكون 'غير كافية'"
+        },
         "speak": {
-            "ap1": "الامتحان النهائي الجزء 1: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "ap2_planning": "الامتحان النهائي الجزء 2: تخطيط منتج برمجي: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "ap2_development": "التطوير والتنفيذ: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "pw_project": "العمل على مشروع الشركة: التوثيق: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "pw_presentation": "العرض التقديمي: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "pw_overall": "ينتج عن ذلك النتيجة التالية لمشروع الشركة: الدرجة {{grade}} بعدد {{points}} نقطة.",
-            "overall": "نتيجتك الإجمالية هي: الدرجة {{grade}} بعدد {{points}} نقطة."
+            "ap1": "الامتحان النهائي الجزء 1: الدرجة {{grade}} مع {{points}} نقاط.",
+            "ap2_planning": "الامتحان النهائي الجزء 2: تخطيط منتج البرمجيات: الدرجة {{grade}} مع {{points}} نقاط.",
+            "ap2_development": "التطوير والتنفيذ: الدرجة {{grade}} مع {{points}} نقاط.",
+            "ap2_economy": "الاقتصاد والدراسات الاجتماعية: الدرجة {{grade}} مع {{points}} نقاط.",
+            "pw_project": "مشروع العمل في الشركة: التوثيق: الدرجة {{grade}} مع {{points}} نقاط.",
+            "pw_presentation": "العرض: الدرجة {{grade}} مع {{points}} نقاط.",
+            "pw_overall": "يؤدي ذلك إلى النتيجة التالية لمشروع العمل في الشركة: الدرجة {{grade}} مع {{points}} نقاط.",
+            "ap2_overall": "في الامتحان النهائي الجزء 2، يؤدي ذلك إلى الدرجة {{grade}} مع {{points}} نقاط.",
+            "overall": "نتيجتك الكلية هي: الدرجة {{grade}} مع {{points}} نقاط."
         }
     },
     "settings": {
-        "title": "تطبيقي الصغير",
+        "title": "تطبيق صغير خاص بي",
         "home_welcome": "مرحبًا بك في الصفحة الرئيسية",
         "language": "اللغة",
         "contact_text": "اتصل بنا.",
@@ -113,19 +122,19 @@
         "change_language": "تغيير اللغة",
         "settings_change_language_note": "اختر لغة العرض (لن يتم حفظها).",
         "appearance": "المظهر",
-        "dark_mode": "داكن",
-        "light_mode": "فاتح",
-        "toggle_theme_button": "تبديل المظهر",
-        "note_no_persist": "لن يتم حفظ الاختيار؛ ستُستخدم اللغة الافتراضية عند إعادة التحميل."
+        "dark_mode": "الوضع الداكن",
+        "light_mode": "الوضع الفاتح",
+        "toggle_theme_button": "تغيير المظهر",
+        "note_no_persist": "الاختيار غير محفوظ؛ سيتم استخدام اللغة الافتراضية عند إعادة التحميل."
     },
     "about": {
         "title": "حول التطبيق",
         "version": "الإصدار",
-        "loading": "جارٍ التحميل...",
-        "madeBy": "تم إنشاؤه بواسطة",
+        "loading": "جاري التحميل...",
+        "madeBy": "صنع بواسطة",
         "productOwner": "مالك المنتج",
         "projectInfo": "معلومات المشروع",
-        "projectDescription": "مشروع مدرسي تابع لـ <strong>{{school}}</strong>\n المعلم المشرف: {{teacher}}",
+        "projectDescription": "مشروع مدرسي من <strong>{{school}}</strong> \n المعلم المشرف: {{teacher}}",
         "githubRepo": "مستودع GitHub",
         "copyLink": "نسخ الرابط",
         "copied": "تم النسخ!"

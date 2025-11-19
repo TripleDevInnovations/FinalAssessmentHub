@@ -129,7 +129,6 @@ class ExamCalculationService:
             failure_reasons.append("COMPONENT_BELOW_30_POINTS")
 
 
-
         passed = not failure_reasons
 
         components["Passed"] = passed

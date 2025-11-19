@@ -182,7 +182,7 @@ export default function ListResultsPage(): JSX.Element {
     };
 
     return (
-        <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+        <Paper elevation={3} sx={{ borderRadius: 2}}>
             {renderContent()}
 
             {/* Edit Dialog */}
