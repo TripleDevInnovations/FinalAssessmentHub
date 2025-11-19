@@ -48,7 +48,8 @@
         "validation": {
             "nameRequired": "الاسم مطلوب.",
             "required": "مطلوب",
-            "valueBetween": "يجب أن تكون القيمة بين 0 و100"
+            "valueBetween": "يجب أن تكون القيمة بين 0 و100",
+            "nameTooLong": "الطول الأقصى: {{maxLength}} حرف"
         },
         "snackbar": {
             "validationError": "يرجى إصلاح الأخطاء قبل الإرسال.",

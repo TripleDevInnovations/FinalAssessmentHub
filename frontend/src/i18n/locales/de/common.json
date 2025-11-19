@@ -48,7 +48,8 @@
         "validation": {
             "nameRequired": "Name ist erforderlich.",
             "required": "Erforderlich",
-            "valueBetween": "Wert muss zwischen 0 und 100 liegen"
+            "valueBetween": "Wert muss zwischen 0 und 100 liegen",
+            "nameTooLong": "Maximale Länge: {{maxLength}} Zeichen"
         },
         "snackbar": {
             "validationError": "Bitte Fehler vor dem Absenden beheben.",

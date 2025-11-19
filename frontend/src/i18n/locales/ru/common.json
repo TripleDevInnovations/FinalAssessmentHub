@@ -48,7 +48,8 @@
         "validation": {
             "nameRequired": "Имя обязательно.",
             "required": "Обязательно",
-            "valueBetween": "Значение должно быть между 0 и 100"
+            "valueBetween": "Значение должно быть между 0 и 100",
+            "nameTooLong": "Максимальная длина: {{maxLength}} символов"
         },
         "snackbar": {
             "validationError": "Исправьте ошибки перед отправкой.",
