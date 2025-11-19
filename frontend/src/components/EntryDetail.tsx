@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Card,
   Typography,
@@ -51,7 +51,6 @@ interface EntryDetailHeaderProps {
   isCalculating: boolean;
   isSpeaking: boolean;
   onMenu?: () => void;
-  onCalculate: () => void;
   onEdit: () => void;
   onDelete: () => void;
   onReadAloud: () => void;
@@ -64,7 +63,6 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
   isCalculating,
   isSpeaking,
   onMenu,
-  onCalculate,
   onEdit,
   onDelete,
   onReadAloud,
@@ -90,30 +88,12 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
       <Typography variant="h4" fontWeight="bold" noWrap>
         {entry.name}
       </Typography>
+      {/* Zeige einen Ladeindikator neben dem Titel, während die Berechnung läuft */}
+      {isCalculating && <CircularProgress size={24} />}
     </Stack>
     <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
-      <Button
-        variant="contained"
-        startIcon={
-          isCalculating ? (
-            <CircularProgress size={18} color="inherit" />
-          ) : (
-            <CalculateIcon />
-          )
-        }
-        onClick={onCalculate}
-        disabled={
-          isCalculating ||
-          entry.ap1 == null ||
-          entry.ap2?.planning?.main == null ||
-          entry.ap2?.development?.main == null ||
-          entry.ap2?.economy?.main == null ||
-          entry.ap2?.pw?.presentation == null ||
-          entry.ap2?.pw?.project == null
-        }
-      >
-        {t("results.calculate_button")}
-      </Button>
+      {/* Der Berechnen-Button wurde entfernt */}
+
       {calculation && (
         <Tooltip title={isSpeaking ? t("results.stop_read_aloud_aria") : t("results.read_aloud_aria")}>
           <IconButton
@@ -127,11 +107,7 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
       <IconButton onClick={onEdit} aria-label={t("results.edit_aria")}>
         <EditIcon />
       </IconButton>
-      <IconButton
-        color="error"
-        onClick={onDelete}
-        aria-label={t("results.delete_aria")}
-      >
+      <IconButton color="error" onClick={onDelete} aria-label={t("results.delete_aria")}>
         <DeleteIcon />
       </IconButton>
     </Stack>
@@ -180,7 +156,7 @@ const ExamPartCard: React.FC<ExamPartCardProps> = ({
 
 interface EntryDetailProps {
   entry: Entry | null;
-  onEdit: (id:string) => void;
+  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onMenu?: () => void;
 }
@@ -213,7 +189,7 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
     return parts.join(". ");
   };
 
-  const handleCalculate = async (entryId: string) => {
+  const handleCalculate = useCallback(async (entryId: string) => {
     setIsCalculating(true);
     setCalcError(null);
     try {
@@ -228,7 +204,25 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
     } finally {
       setIsCalculating(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    if (!entry) {
+      return;
+    }
+
+    const allFieldsFilled =
+      entry.ap1 != null &&
+      entry.ap2?.planning?.main != null &&
+      entry.ap2?.development?.main != null &&
+      entry.ap2?.economy?.main != null &&
+      entry.ap2?.pw?.presentation != null &&
+      entry.ap2?.pw?.project != null;
+
+    if (allFieldsFilled) {
+      handleCalculate(entry.id);
+    }
+  }, [entry, handleCalculate]);
 
   if (!entry) {
     return (
@@ -249,9 +243,8 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
         entry={entry}
         calculation={calculation}
         isCalculating={isCalculating}
-        isSpeaking={isSpeaking} 
+        isSpeaking={isSpeaking}
         onMenu={onMenu}
-        onCalculate={() => handleCalculate(entry.id)}
         onEdit={() => onEdit(entry.id)}
         onDelete={() => onDelete(entry.id)}
         onReadAloud={() => {
