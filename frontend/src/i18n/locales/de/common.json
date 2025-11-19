@@ -118,5 +118,16 @@
         "toggle_theme_button": "Darstellung wechseln",
         "note_no_persist": "Die Auswahl wird nicht gespeichert; beim Neuladen wird die Standard-Sprache genutzt."
     },
-    "about": {}
+    "about": {
+        "title": "Über die App",
+        "version": "Version",
+        "loading": "wird geladen...",
+        "madeBy": "Wer hat es gemacht",
+        "productOwner": "Product Owner",
+        "projectInfo": "Projektinformationen",
+        "projectDescription": "Ein Schulprojekt der <strong>{{school}}</strong> \n Betreuender Lehrer: {{teacher}}",
+        "githubRepo": "GitHub Repository",
+        "copyLink": "Link kopieren",
+        "copied": "Kopiert!"
+    }
 }

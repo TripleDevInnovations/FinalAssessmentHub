@@ -118,5 +118,16 @@
         "toggle_theme_button": "تبديل المظهر",
         "note_no_persist": "لن يتم حفظ الاختيار؛ ستُستخدم اللغة الافتراضية عند إعادة التحميل."
     },
-    "about": {}
+    "about": {
+        "title": "حول التطبيق",
+        "version": "الإصدار",
+        "loading": "جارٍ التحميل...",
+        "madeBy": "تم إنشاؤه بواسطة",
+        "productOwner": "مالك المنتج",
+        "projectInfo": "معلومات المشروع",
+        "projectDescription": "مشروع مدرسي تابع لـ <strong>{{school}}</strong>\n المعلم المشرف: {{teacher}}",
+        "githubRepo": "مستودع GitHub",
+        "copyLink": "نسخ الرابط",
+        "copied": "تم النسخ!"
+    }
 }

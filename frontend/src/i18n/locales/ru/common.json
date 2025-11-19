@@ -118,5 +118,16 @@
         "toggle_theme_button": "Переключить внешний вид",
         "note_no_persist": "Выбор не сохраняется; при перезагрузке будет использован язык по умолчанию."
     },
-    "about": {}
+    "about": {
+        "title": "О приложении",
+        "version": "Версия",
+        "loading": "загрузка...",
+        "madeBy": "Кем создано",
+        "productOwner": "Владелец продукта",
+        "projectInfo": "Информация о проекте",
+        "projectDescription": "Школьный проект <strong>{{school}}</strong>\n Руководитель: {{teacher}}",
+        "githubRepo": "GitHub репозиторий",
+        "copyLink": "Скопировать ссылку",
+        "copied": "Скопировано!"
+    }
 }

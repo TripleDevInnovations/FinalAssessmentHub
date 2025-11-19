@@ -118,5 +118,16 @@
         "toggle_theme_button": "Toggle Appearance",
         "note_no_persist": "The selection is not saved; the default language will be used on reload."
     },
-    "about": {}
+    "about": {
+        "title": "About the App",
+        "version": "Version",
+        "loading": "loading...",
+        "madeBy": "Created by",
+        "productOwner": "Product Owner",
+        "projectInfo": "Project Information",
+        "projectDescription": "A school project of <strong>{{school}}</strong>\n Supervising teacher: {{teacher}}",
+        "githubRepo": "GitHub Repository",
+        "copyLink": "Copy link",
+        "copied": "Copied!"
+    }
 }

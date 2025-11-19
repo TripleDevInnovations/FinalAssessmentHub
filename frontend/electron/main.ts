@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage, dialog, crashReporter } from 'electron'
+import { app, ipcMain, BrowserWindow, nativeImage, dialog, crashReporter } from 'electron'
 import { fileURLToPath } from 'node:url'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -12,6 +12,11 @@ app.commandLine.appendSwitch('disable-accelerated-2d-canvas')
 app.commandLine.appendSwitch('disable-accelerated-video-decode')
 
 app.disableHardwareAcceleration()
+
+ipcMain.handle('getAppVersion', () => {
+  return app.getVersion();
+});
+
 
 // ----------------------------------------------------------------------------
 // CrashReporter (lokal)
