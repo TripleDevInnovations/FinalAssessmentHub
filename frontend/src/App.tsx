@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -17,13 +17,25 @@ const App: React.FC = () => {
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [mode, setMode] = useState<PaletteMode>('light');
 
+  useEffect(() => {
+    const fetchAndSetTheme = async () => {
+      const isDarkMode = await window.electronAPI.getInitialTheme();
+      setMode(isDarkMode ? 'dark' : 'light');
+    };
+
+    fetchAndSetTheme();
+  }, []);
+
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
   const toggleColorMode = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    const newMode = mode === 'light' ? 'dark' : 'light';
+    setMode(newMode);
+    window.electronAPI.setTheme(newMode);
   };
+
 
   const theme = useMemo(() => getTheme(mode), [mode]);
 

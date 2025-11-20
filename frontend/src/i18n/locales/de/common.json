@@ -10,7 +10,7 @@
     },
     "add": {
         "title": "Prüfungsergebnisse eintragen",
-        "subtitle": "Trage Nickname und Punktzahlen (0–100) ein und klicke auf Absenden.",
+        "subtitle": "Trage Nickname und Punktzahlen (0-100) ein und klicke auf Absenden.",
         "nicknameLabel": "Nickname",
         "submitButton": "Absenden",
         "resetButton": "Zurücksetzen",
@@ -41,14 +41,15 @@
             "implementationLabel": "Planung und Umsetzung"
         },
         "helper": {
-            "pointsRange": "0–100",
+            "pointsRange": "0-100",
             "optional": "Optional",
             "extraDisabled": "Deaktiviert, da eine andere Zusatzprüfung aktiv ist"
         },
         "validation": {
             "nameRequired": "Name ist erforderlich.",
             "required": "Erforderlich",
-            "valueBetween": "Wert muss zwischen 0 und 100 liegen"
+            "valueBetween": "Wert muss zwischen 0 und 100 liegen",
+            "nameTooLong": "Maximale Länge: {{maxLength}} Zeichen"
         },
         "snackbar": {
             "validationError": "Bitte Fehler vor dem Absenden beheben.",
@@ -79,6 +80,7 @@
         "documentation": "Dokumentation",
         "exam_2": "Abschlussprüfung 2",
         "exam2_subtitle": "Schriftlich",
+        "exam_2_overall": "Abschlussprüfung 2 Gesamt",
         "plan_software_product": "Planen eines Softwareproduktes",
         "development_and_implementation": "Entwicklung und Umsetzung",
         "economics_and_social_studies": "Wirtschafts- und Sozialkunde",
@@ -90,6 +92,15 @@
         "passed": "Bestanden",
         "failed": "Durchgefallen",
         "project_work_overall": "Gesamt",
+        "read_aloud_aria": "Ergebnis vorlesen",
+        "stop_read_aloud_aria": "Vorlesen stoppen",
+        "reasons": {
+            "text": "Gründe",
+            "OVERALL_BELOW_50_POINTS": "im Gesamtergebnis von Teil 1 und Teil 2 mindestens „ausreichend“",
+            "AP2_OVERALL_BELOW_50_POINTS": "im Ergebnis von Teil 2 mindestens „ausreichend“",
+            "TOO_MANY_COMPONENTS_BELOW_50_POINTS": "in mindestens drei Prüfungsbereichen von Teil 2 mindestens „ausreichend“",
+            "COMPONENT_BELOW_30_POINTS": " in keinem Prüfungsbereich von Teil 2 „ungenügend“"
+        },
         "speak": {
             "ap1": "Abschlussprüfung Teil 1: Notee {{grade}} mit {{points}} Punkten.",
             "ap2_planning": "Abschlussprüfung Teil 2: Planen eines Softwareproduktes: Notee {{grade}} mit {{points}} Punkten.",
@@ -98,6 +109,7 @@
             "pw_project": "Betriebliche Projektarbeit: Dokumentation: Notee {{grade}} mit {{points}} Punkten.",
             "pw_presentation": "Präsentation: Notee {{grade}} mit {{points}} Punkten.",
             "pw_overall": "Daraus Ergibt sich folgendes Ergebnis für die betirebliche Projektarbeit: Notee {{grade}} mit {{points}} Punkten.",
+            "ap2_overall": "In der Abschlussprüfung Teil 2 ergibt das die Notee {{grade}} mit {{points}} Punkten.",
             "overall": "Dein Gesamtergebnis ist: Notee {{grade}} mit {{points}} Punkten."
         }
     },
@@ -115,5 +127,16 @@
         "toggle_theme_button": "Darstellung wechseln",
         "note_no_persist": "Die Auswahl wird nicht gespeichert; beim Neuladen wird die Standard-Sprache genutzt."
     },
-    "about": {}
+    "about": {
+        "title": "Über die App",
+        "version": "Version",
+        "loading": "wird geladen...",
+        "madeBy": "Wer hat es gemacht",
+        "productOwner": "Product Owner",
+        "projectInfo": "Projektinformationen",
+        "projectDescription": "Ein Schulprojekt der <strong>{{school}}</strong> \n Betreuender Lehrer: {{teacher}}",
+        "githubRepo": "GitHub Repository",
+        "copyLink": "Link kopieren",
+        "copied": "Kopiert!"
+    }
 }

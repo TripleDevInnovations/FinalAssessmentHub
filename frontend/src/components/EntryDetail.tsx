@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Card,
   Typography,
   IconButton,
-  Button,
   Chip,
   Stack,
   Divider,
@@ -11,12 +10,11 @@ import {
   Alert,
   Tooltip,
   Box,
+  List,
+  ListItem,
 } from "@mui/material";
-// @ts-ignore
-import Grid from '@mui/material/GridLegacy';
 import DeleteIcon from "@mui/icons-material/Delete";
 import MenuIcon from "@mui/icons-material/Menu";
-import CalculateIcon from "@mui/icons-material/Calculate";
 // @ts-ignore
 import { useTranslation, TFunction } from "react-i18next";
 import { Entry, CalculationResult, GradeAndPoints } from "../types";
@@ -27,6 +25,8 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
+// --- Hilfskomponenten (unverändert) ---
+
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
@@ -34,11 +34,11 @@ interface SectionHeaderProps {
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle }) => (
   <>
-    <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <Typography variant="h5" fontWeight="bold" gutterBottom>
       {title}
     </Typography>
     {subtitle && (
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mt: -1, mb: 1 }}>
         {subtitle}
       </Typography>
     )}
@@ -47,26 +47,24 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle }) => (
 
 interface EntryDetailHeaderProps {
   entry: Entry;
-  calculation: CalculationResult | null;
   isCalculating: boolean;
   isSpeaking: boolean;
   onMenu?: () => void;
-  onCalculate: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  showReadAloudButton: boolean;
   onReadAloud: () => void;
   t: TFunction;
 }
 
 const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
   entry,
-  calculation,
   isCalculating,
   isSpeaking,
   onMenu,
-  onCalculate,
   onEdit,
   onDelete,
+  showReadAloudButton,
   onReadAloud,
   t,
 }) => (
@@ -90,34 +88,13 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
       <Typography variant="h4" fontWeight="bold" noWrap>
         {entry.name}
       </Typography>
+      {isCalculating && <CircularProgress size={24} />}
     </Stack>
     <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
-      <Button
-        variant="contained"
-        startIcon={
-          isCalculating ? (
-            <CircularProgress size={18} color="inherit" />
-          ) : (
-            <CalculateIcon />
-          )
-        }
-        onClick={onCalculate}
-        disabled={
-          isCalculating ||
-          !entry.ap1 ||
-          !entry.ap2?.planning?.main ||
-          !entry.ap2?.development?.main ||
-          !entry.ap2?.economy?.main ||
-          !entry.ap2?.pw?.presentation ||
-          !entry.ap2?.pw?.project
-        }
-      >
-        {t("results.calculate_button")}
-      </Button>
-      {calculation && (
-        <Tooltip title={isSpeaking ? t("results.stop_read_aloud_aria", "Vorlesen stoppen") : t("results.read_aloud_aria", "Ergebnis vorlesen")}>
+      {showReadAloudButton && (
+        <Tooltip title={isSpeaking ? t("results.stop_read_aloud_aria") : t("results.read_aloud_aria")}>
           <IconButton
-            aria-label={isSpeaking ? t("results.stop_read_aloud_aria", "Vorlesen stoppen") : t("results.read_aloud_aria", "Ergebnis vorlesen")}
+            aria-label={isSpeaking ? t("results.stop_read_aloud_aria") : t("results.read_aloud_aria")}
             onClick={onReadAloud}
           >
             {isSpeaking ? <StopIcon /> : <VolumeUpIcon />}
@@ -127,60 +104,57 @@ const EntryDetailHeader: React.FC<EntryDetailHeaderProps> = ({
       <IconButton onClick={onEdit} aria-label={t("results.edit_aria")}>
         <EditIcon />
       </IconButton>
-      <IconButton
-        color="error"
-        onClick={onDelete}
-        aria-label={t("results.delete_aria")}
-      >
+      <IconButton color="error" onClick={onDelete} aria-label={t("results.delete_aria")}>
         <DeleteIcon />
       </IconButton>
     </Stack>
   </Stack>
 );
 
-interface ExamPartCardProps {
+interface ResultRowProps {
   label: string;
-  mainValue?: number | string | null;
-  extraValue?: number | string | null;
+  value: number | string | null | undefined;
+  extraValue?: number | string | null | undefined;
+  extraLabel?: string;
   calculation?: GradeAndPoints;
   t: TFunction;
 }
 
-const ExamPartCard: React.FC<ExamPartCardProps> = ({
-  label,
-  mainValue,
-  extraValue,
-  calculation,
-  t,
-}) => (
-  <Grid item xs={12} sm={6} md={4}>
-    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-      {label}
-    </Typography>
-    <Stack direction="column" spacing={1} alignItems="center" flexWrap="wrap">
-      <Typography variant="body1" fontWeight="medium">
-        {mainValue ?? "-"}
-        {extraValue && ` / ${extraValue ?? "-"} (MEPR)`}
+const ResultRow: React.FC<ResultRowProps> = ({ label, value, extraValue, extraLabel = "MEPR", calculation, t }) => (
+  <Stack
+    direction={{ xs: "column", sm: "row" }}
+    justifyContent="space-between"
+    alignItems={{ xs: "flex-start", sm: "center" }}
+    spacing={{ xs: 1, sm: 2 }}
+    sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider', '&:last-of-type': { borderBottom: 'none' } }}
+  >
+    <Box>
+      <Typography fontWeight="medium">{label}</Typography>
+      <Typography variant="body2" color="text.secondary">
+        {t("results.points", "Eingabe (Punkte)")}: {value ?? "-"}
+        {extraValue != null && ` / ${extraValue} (${extraLabel})`}
       </Typography>
-      {calculation && calculation.grade !== null && (
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Tooltip title={t("results.grade") ?? "Berechneter Wert"}>
-            <Chip size="small" label={calculation?.grade?.toString()} />
-          </Tooltip>
-          {extraValue && calculation.points !== null && (
-            <Typography variant="caption" color="text.secondary">
-              {calculation.points} {t("results.points") ?? "P"}
-            </Typography>
-          )}
-        </Stack>
-      )}
-    </Stack>
-  </Grid>
+    </Box>
+    {calculation && calculation.grade !== null && (
+      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ bgcolor: 'action.hover', p: 1, borderRadius: 2 }}>
+        <Tooltip title={t("results.grade") ?? "Note"}>
+          <Chip size="small" label={calculation.grade!.toString()} color="primary" />
+        </Tooltip>
+        {calculation.points !== null && (
+          <Typography variant="body1" fontWeight="medium">
+            {calculation.points} {t("results.points") ?? "P"}
+          </Typography>
+        )}
+      </Stack>
+    )}
+  </Stack>
 );
 
+
+// --- Hauptkomponente (angepasst) ---
 interface EntryDetailProps {
   entry: Entry | null;
-  onEdit: (id:string) => void;
+  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onMenu?: () => void;
 }
@@ -191,6 +165,15 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
   const [calculation, setCalculation] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [calcError, setCalcError] = useState<string | null>(null);
+
+  const allFieldsFilled =
+    !!entry &&
+    entry.ap1 != null &&
+    entry.ap2?.planning?.main != null &&
+    entry.ap2?.development?.main != null &&
+    entry.ap2?.economy?.main != null &&
+    entry.ap2?.pw?.presentation != null &&
+    entry.ap2?.pw?.project != null;
 
   useEffect(() => {
     setCalculation(null);
@@ -208,12 +191,13 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
       t("results.speak.pw_project", { grade: result.AP2.pw.project.grade, points: result.AP2.pw.project.points }),
       t("results.speak.pw_presentation", { grade: result.AP2.pw.presentation.grade, points: result.AP2.pw.presentation.points }),
       t("results.speak.pw_overall", { grade: result.AP2.pw.overall.grade, points: result.AP2.pw.overall.points }),
+      t("results.speak.ap2_overall", { grade: result.AP2.overall.grade, points: result.AP2.overall.points }),
       t("results.speak.overall", { grade: result.Overall.grade, points: result.Overall.points }),
     ];
     return parts.join(". ");
   };
 
-  const handleCalculate = async (entryId: string) => {
+  const handleCalculate = useCallback(async (entryId: string) => {
     setIsCalculating(true);
     setCalcError(null);
     try {
@@ -228,32 +212,37 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
     } finally {
       setIsCalculating(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    if (!entry) {
+      return;
+    }
+    if (allFieldsFilled) {
+      handleCalculate(entry.id);
+    } else {
+      setCalculation(null);
+    }
+  }, [entry, handleCalculate, allFieldsFilled]);
 
   if (!entry) {
     return (
-      <Typography
-        variant="h6"
-        color="text.secondary"
-        align="center"
-        sx={{ mt: 4 }}
-      >
+      <Typography variant="h6" color="text.secondary" align="center" sx={{ mt: 4 }}>
         {t("results.select_entry_prompt")}
       </Typography>
     );
   }
 
   return (
-    <Stack spacing={3} sx={{ p: { xs: 2, md: 4 } }}>
+    <Stack spacing={4} sx={{ p: { xs: 2, md: 4 } }}>
       <EntryDetailHeader
         entry={entry}
-        calculation={calculation}
         isCalculating={isCalculating}
-        isSpeaking={isSpeaking} 
+        isSpeaking={isSpeaking}
         onMenu={onMenu}
-        onCalculate={() => handleCalculate(entry.id)}
         onEdit={() => onEdit(entry.id)}
         onDelete={() => onDelete(entry.id)}
+        showReadAloudButton={allFieldsFilled}
         onReadAloud={() => {
           if (isSpeaking) {
             cancel();
@@ -263,155 +252,152 @@ const EntryDetail: React.FC<EntryDetailProps> = ({ entry, onEdit, onDelete, onMe
         }}
         t={t}
       />
-
       <Divider />
 
+      {calcError && <Alert severity="error">{calcError}</Alert>}
+
       {calculation && (
-        <Alert
-          severity={calculation.Passed ? "success" : "error"}
-          sx={{ alignItems: "center", p: 2, ".MuiAlert-message": { width: '100%' } }}
-        >
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={{ xs: 1, sm: 2 }}
-            sx={{ width: "100%" }}
-          >
-            <Typography variant="h5" fontWeight="bold">
-              {calculation.Passed ? t("results.passed") : t("results.failed")}
-            </Typography>
-            <Stack direction="row" spacing={1.5} alignItems="baseline">
-              <Typography variant="h6" fontWeight="medium">
-                {t("results.overall")}:
+        <Alert severity={calculation.Status.passed ? "success" : "error"} sx={{ p: 2 }}>
+          <Stack spacing={1.5}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={{ xs: 1, sm: 2 }}
+              sx={{ width: "100%" }}
+            >
+              <Typography variant="h5" fontWeight="bold">
+                {calculation.Status.passed ? t("results.passed") : t("results.failed")}
               </Typography>
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                color={calculation.Passed ? "success.dark" : "error.dark"}
-              >
-                {calculation.Overall.grade}
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                ({calculation.Overall.points} {t("results.points")})
-              </Typography>
+              <Stack direction="row" spacing={1.5} alignItems="baseline">
+                <Typography variant="h6" fontWeight="medium">{t("results.overall")}:</Typography>
+                <Typography
+                  variant="h4"
+                  fontWeight="bold"
+                  color={calculation.Status.passed ? "success.dark" : "error.dark"}
+                >
+                  {calculation.Overall.grade}
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  ({calculation.Overall.points} {t("results.points")})
+                </Typography>
+              </Stack>
             </Stack>
+            {!calculation.Status.passed && calculation.Status.reasons.length > 0 && (
+              <Box sx={{ pt: 1 }}>
+                <Typography variant="subtitle1" fontWeight="bold">{t("results.reasons.text")}:</Typography>
+                <List dense sx={{ listStyleType: 'disc', pl: 2.5, py: 0 }}>
+                  {calculation.Status.reasons.map((reason, index) => (
+                    <ListItem key={index} sx={{ display: 'list-item', p: 0 }}>
+                      <Typography variant="body2">{t(`results.reasons.${reason}`)}</Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            )}
           </Stack>
         </Alert>
       )}
 
-      <Grid container>
-        {/* AP1 */}
-        <Grid item xs={12} sm={6} md={4} sx={{ p: { xs: 1, sm: 2 } }}>
-          <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
-            <SectionHeader
-              title={t("results.exam_1") ?? "Abschlussprüfung — Teil 1"}
-            />
-            <ExamPartCard
-              label={t("")}
-              mainValue={entry.ap1}
-              calculation={calculation?.AP1}
-              t={t}
-            />
-          </Card>
-        </Grid>
-        {/* AP2 & PW */}
-        <Grid item xs={12} sm={6} md={8} sx={{ p: { xs: 1, sm: 2 } }}>
-          <Card variant="outlined" sx={{ p: 2, height: "100%" }}>
-            <SectionHeader
-              title={t("results.exam_2") ?? "Abschlussprüfung — Teil 2"}
-            />
-            <Grid container spacing={2}>
-              <ExamPartCard
-                label={t("results.plan_software_product")}
-                mainValue={entry.ap2.planning.main}
-                extraValue={entry.ap2.planning.extra}
-                calculation={calculation?.AP2?.planning}
-                t={t}
-              />
-              <ExamPartCard
-                label={t("results.development_and_implementation")}
-                mainValue={entry.ap2.development.main}
-                extraValue={entry.ap2.development.extra}
-                calculation={calculation?.AP2?.development}
-                t={t}
-              />
-              <ExamPartCard
-                label={
-                  t("results.economics_and_social_studies") ??
-                  "Wirtschafts- und Sozialkunde"
-                }
-                mainValue={entry.ap2.economy.main}
-                extraValue={entry.ap2.economy.extra}
-                calculation={calculation?.AP2?.economy}
-                t={t}
-              />
-            </Grid>
-            <Divider sx={{ my: 2 }} />
-            <Box
-              sx={{
-                mt: 2,
-                p: 2,
-                borderRadius: 2,
-                bgcolor: "action.hover",
-              }}
+      <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
+        <SectionHeader title={t("results.exam_1") ?? "Abschlussprüfung — Teil 1"} />
+        <ResultRow label={""} value={entry.ap1} calculation={calculation?.AP1} t={t} />
+      </Card>
+
+      {/* --- ÄNDERUNG START: Alles für AP2 in einer Card zusammengefasst --- */}
+      <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
+        <SectionHeader title={t("results.exam_2") ?? "Abschlussprüfung — Teil 2"} />
+        <ResultRow
+          label={t("results.plan_software_product")}
+          value={entry.ap2?.planning?.main}
+          extraValue={entry.ap2?.planning?.extra}
+          calculation={calculation?.AP2.planning}
+          t={t}
+        />
+        <ResultRow
+          label={t("results.development_and_implementation")}
+          value={entry.ap2?.development?.main}
+          extraValue={entry.ap2?.development?.extra}
+          calculation={calculation?.AP2.development}
+          t={t}
+        />
+        <ResultRow
+          label={t("results.economics_and_social_studies") ?? "Wirtschafts- und Sozialkunde"}
+          value={entry.ap2?.economy?.main}
+          extraValue={entry.ap2?.economy?.extra}
+          calculation={calculation?.AP2.economy}
+          t={t}
+        />
+
+        {/* --- NEU: Visueller Trenner und Überschrift für die Projektarbeit --- */}
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          {t("results.project_work") ?? "Betriebliche Projektarbeit"}
+        </Typography>
+
+        {/* --- Bestehender Code für die Projektarbeit hierher verschoben --- */}
+        <ResultRow
+          label={t("results.documentation") ?? "Dokumentation"}
+          value={entry.ap2?.pw?.project}
+          calculation={calculation?.AP2.pw.project}
+          t={t}
+        />
+        <ResultRow
+          label={t("results.presentation") ?? "Präsentation & Fachgespräch"}
+          value={entry.ap2?.pw?.presentation}
+          calculation={calculation?.AP2.pw.presentation}
+          t={t}
+        />
+
+        {calculation?.AP2.pw.overall && (
+          <>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ py: 1.5 }}
             >
-              <SectionHeader
-                title={t("results.project_work") ?? "Betriebliche Projektarbeit"}
-              />
-              <Grid container spacing={2}>
-                <ExamPartCard
-                  label={t("results.documentation") ?? "Dokumentation"}
-                  mainValue={entry?.ap2?.pw?.project}
-                  calculation={calculation?.AP2?.pw?.project}
-                  t={t}
-                />
-                <ExamPartCard
-                  label={
-                    t("results.presentation") ?? "Präsentation & Fachgespräch"
-                  }
-                  mainValue={entry?.ap2?.pw?.presentation}
-                  calculation={calculation?.AP2?.pw?.presentation}
-                  t={t}
-                />
-              </Grid>
-              {calculation?.AP2?.pw?.overall && (
-                <>
-                  <Divider sx={{ my: 2 }} />
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      {t("results.project_work_overall") ??
-                        "Gesamtergebnis Projektarbeit"}
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={1.5}
-                      alignItems="center"
-                    >
-                      <Tooltip title={t("results.grade") ?? "Note"}>
-                        <Chip
-                          label={calculation.AP2.pw.overall.grade}
-                          color="primary"
-                        />
-                      </Tooltip>
-                      <Typography variant="body1" color="text.secondary">
-                        ({calculation.AP2.pw.overall.points}{" "}
-                        {t("results.points") ?? "P"})
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </>
-              )}
-            </Box>
-          </Card>
-        </Grid>
-      </Grid>
-      {/* Status / Fehler */}
-      {calcError && <Alert severity="error">{calcError}</Alert>}
+              <Typography variant="subtitle1" fontWeight="bold">
+                {t("results.project_work_overall") ?? "Gesamtergebnis Projektarbeit"}
+              </Typography>
+              <Stack direction="row" spacing={1.5} alignItems="center">
+                <Tooltip title={t("results.grade") ?? "Note"}>
+                  <Chip label={calculation.AP2.pw.overall.grade} color="primary" />
+                </Tooltip>
+                <Typography variant="body1" color="text.secondary">
+                  {calculation.AP2.pw.overall.points}{" "}{t("results.points") ?? "P"}
+                </Typography>
+              </Stack>
+            </Stack>
+          </>
+        )}
+
+        {/* --- NEU: Gesamtergebnis für die gesamte Abschlussprüfung 2 --- */}
+        {calculation?.AP2.overall && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ py: 1, bgcolor: 'action.selected', p: 1.5, borderRadius: 2 }}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                {t("results.exam_2_overall") ?? "Gesamtergebnis AP2"}
+              </Typography>
+              <Stack direction="row" spacing={1.5} alignItems="center">
+                <Tooltip title={t("results.grade") ?? "Note"}>
+                  <Chip label={calculation.AP2.overall.grade} color="secondary" size="medium" />
+                </Tooltip>
+                <Typography variant="h6" fontWeight="bold">
+                  {calculation.AP2.overall.points}{" "}{t("results.points") ?? "P"}
+                </Typography>
+              </Stack>
+            </Stack>
+          </>
+        )}
+      </Card>
+      {/* --- ÄNDERUNG ENDE: Die separate Card für die Projektarbeit wurde entfernt --- */}
     </Stack>
   );
 };

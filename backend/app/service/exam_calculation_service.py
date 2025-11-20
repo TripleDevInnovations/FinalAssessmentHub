@@ -58,6 +58,25 @@ class ExamCalculationService:
         elif ap2_pw_presentation_points is not None:
             ap2_pw_overall_points = ap2_pw_presentation_points
 
+        ap2_overall_points = None
+        ap2_components_for_calc = {
+            "ap2_planning": ap2_planning_points,
+            "ap2_development": ap2_development_points,
+            "ap2_economy": ap2_economy_points,
+            "ap2_pw_overall": ap2_pw_overall_points,
+        }
+
+        ap2_weighted_sum = 0.0
+        ap2_present_weight_sum = 0.0
+        for key, pts in ap2_components_for_calc.items():
+            if pts is not None:
+                w = self.WEIGHTS.get(key, 0.0)
+                ap2_weighted_sum += w * float(pts)
+                ap2_present_weight_sum += w
+
+        if ap2_present_weight_sum > 0:
+            ap2_overall_points = round(ap2_weighted_sum / ap2_present_weight_sum)
+
         components = {
             "ap1": {"points": ap1_points, "grade": self._grade_from_points(ap1_points)},
             "ap2_planning": {"points": ap2_planning_points, "grade": self._grade_from_points(ap2_planning_points)},
@@ -68,6 +87,7 @@ class ExamCalculationService:
             "ap2_pw_presentation": {"points": ap2_pw_presentation_points,
                                 "grade": self._grade_from_points(ap2_pw_presentation_points)},
             "ap2_pw_overall": {"points": ap2_pw_overall_points, "grade": self._grade_from_points(ap2_pw_overall_points)},
+            "ap2_overall": {"points": ap2_overall_points, "grade": self._grade_from_points(ap2_overall_points)}
         }
 
         weighted_sum = 0.0
@@ -88,18 +108,30 @@ class ExamCalculationService:
 
         components["Overall"] = {"points": overall_points, "grade": overall_grade}
 
-        fail_cond1 = any(p is not None and p < 30 for p in [
-            ap1_points, ap2_planning_points, ap2_development_points, ap2_economy_points, ap2_pw_overall_points
-        ])
+        failure_reasons = []
 
-        fail_cond2 = sum(1 for p in [
-            ap2_planning_points, ap2_development_points, ap2_economy_points, ap2_pw_overall_points
-        ] if p is not None and p < 50) > 1
+        # im Gesamtergebnis von Teil 1 und Teil 2 mit mindestens „ausreichend“
+        if overall_points is not None and overall_points < 50:
+            failure_reasons.append("OVERALL_BELOW_50_POINTS")
 
-        fail_cond3 = overall_points is not None and overall_points < 50
+        # im Ergebnis von Teil 2 mit mindestens „ausreichend“
+        if ap2_overall_points is not None and ap2_overall_points < 50:
+            failure_reasons.append("AP2_OVERALL_BELOW_50_POINTS")
 
-        passed = not (fail_cond1 or fail_cond2 or fail_cond3)
+        # in mindestens drei Prüfungsbereichen von Teil 2 mit mindestens „ausreichend“
+        if sum(1 for p in [ap2_planning_points, ap2_development_points, ap2_economy_points, ap2_pw_overall_points]
+               if p is not None and p < 50) > 1:
+            failure_reasons.append("TOO_MANY_COMPONENTS_BELOW_50_POINTS")
+
+        # in keinem Prüfungsbereich von Teil 2 mit „ungenügend“
+        if any(p is not None and p < 30 for p in
+               [ap2_planning_points, ap2_development_points, ap2_economy_points, ap2_pw_overall_points]):
+            failure_reasons.append("COMPONENT_BELOW_30_POINTS")
+
+
+        passed = not failure_reasons
 
         components["Passed"] = passed
+        components["FailureReasons"] = failure_reasons
 
         return FinalExamResultOutput.from_result_dict(components)
