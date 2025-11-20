@@ -73,7 +73,7 @@ const InformationPage: React.FC = () => {
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               {t('about.productOwner')}
             </Typography>
-            <Typography color="text.secondary">David Schmorde</Typography>
+            <Typography color="text.secondary">David Schmorrde</Typography>
           </Box>
           <Divider />
           <Box>
